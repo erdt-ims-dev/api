@@ -14,8 +14,14 @@ class CreateScholarLeaveApplication extends Migration
     public function up()
     {
         Schema::create('scholar_leave_application', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary()->unique();
+            $table->string('user_id');
+            $table->date('leave_start');
+            $table->date('leave_end');
+            $table->binary('leave_reason');
+            $table->string('status');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
