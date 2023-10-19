@@ -5,9 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Staff extends Model
+class LeaveApplication extends Model
 {
     use HasFactory;
-    protected $table = 'staff';
-    protected $fillable = ['user_id','password', 'account_type'];
 }
