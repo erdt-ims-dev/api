@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Scholar extends Model
+{
+    use HasFactory;
+    protected $table = 'scholar_portfolio';
+    protected $fillable = [
+        'user_id',
+        'account_details_id',
+        'scholar_request_id',
+        'scholar_task_id',
+        'scholar_portfolio_id',
+        'scholar_leave_app_id',
+        ];
+}

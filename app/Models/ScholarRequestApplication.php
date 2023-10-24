@@ -5,15 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class LeaveApplication extends Model
+class ScholarRequestApplication extends Model
 {
     use HasFactory;
-    protected $table = 'scholar_leave_application';
+    protected $table = 'scholar_request_application';
     protected $fillable = [
+        'account_details_id',
         'user_id',
-        'leave_start',
-        'leave_end',
-        'leave_reason',
         'status',
+        'comment_id'
         ];
 }
