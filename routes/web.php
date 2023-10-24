@@ -13,6 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/invalid_token', function(){
+    return response()->json(['error' => 'Invalid Token']);
+})->name('app');

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Scholar extends Model
 {
     use HasFactory;
-    protected $table = 'scholar_portfolio';
+    protected $table = 'scholar';
     protected $fillable = [
         'user_id',
         'account_details_id',
