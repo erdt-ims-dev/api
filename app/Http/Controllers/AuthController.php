@@ -111,4 +111,18 @@ class AuthController extends APIController
             return $this->getError();
         }
     }
+    public function logout(Request $request){
+        try {
+            // $data = $request->all();
+            $account = Auth::user();
+            $account->tokens()->where('id', '=', $account->currentAccessToken()->id)->update(array('deleted_at', '=', now()));
+            $this->data = true;
+            $this->status = 200;
+            return $this->getResponse();
+        } catch (\Throwable $th) {
+            $this->error = $th->getMessage();
+            $this->status = $th->getCode();
+            return $this->getError();
+        }
+    }
 }
