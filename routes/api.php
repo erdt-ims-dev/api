@@ -23,11 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::prefix('/app/')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
-<<<<<<< HEAD
     Route::post('addComment', [CommentsController::class, 'addComments']);
-=======
-    
->>>>>>> 1c521517c4b7f1805b113f170b697b9f7aa57d25
 });
 
 //testing

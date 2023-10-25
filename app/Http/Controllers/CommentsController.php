@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+
 use App\Models\Comments;
 
 class CommentsController extends Controller
@@ -18,6 +20,7 @@ class CommentsController extends Controller
         //$testData = "very good job!";
         $data = $request->all();
         $comments = new Comments();
+        $comments->id = Str::orderedUuid();
         $comments->message = $data['message'];
         $comments->save();
 
