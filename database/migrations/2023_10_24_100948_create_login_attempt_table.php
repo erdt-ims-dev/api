@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateScholarList extends Migration
+class CreateLoginAttemptTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class CreateScholarList extends Migration
      */
     public function up()
     {
-        Schema::create('scholar_list', function (Blueprint $table) {
+        Schema::create('login_attempts', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
-            $table->string('scholar_id');
+            $table->string('account_id');
+            $table->Integer('attempts');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,6 +29,6 @@ class CreateScholarList extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('scholar_list');
+        Schema::dropIfExists('login_attempt');
     }
 }
