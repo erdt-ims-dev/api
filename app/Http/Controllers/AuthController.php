@@ -125,4 +125,34 @@ class AuthController extends APIController
             return $this->getError();
         }
     }
+    public function forgotPassword(Request $request)
+    {
+        $data = $request->all();
+
+        $valid = RequestValidatorServiceProvider::forgotPasswordValidator($data);
+
+        if (!$valid) {
+            $this->error = 'Invalid Data Provided';
+            $this->status = 500;
+            return $this->getError();
+        }
+
+        try {
+            $response = Password::sendResetLink(['email' => $data['email']]);
+
+            if ($response === Password::RESET_LINK_SENT) {
+                $this->response['data'] = true;
+                $this->response['status'] = 200;
+                return $this->getResponse();
+            } else {
+                $this->response['error'] = 'Unable to send reset link';
+                $this->response['status'] = 500;
+                return $this->getError();
+            }
+        } catch (\Throwable $th) {
+            $this->response['error'] = $th->getMessage();
+            $this->response['status'] = $th->getCode();
+            return $this->getError();
+        }
+    }
 }

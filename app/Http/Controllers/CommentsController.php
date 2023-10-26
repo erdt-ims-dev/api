@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Comments;
 
-class CommentsController extends Controller
+class CommentsController extends APIController
 {
     
     public function index()
