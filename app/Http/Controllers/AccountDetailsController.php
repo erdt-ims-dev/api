@@ -81,4 +81,46 @@ class AccountDetailsController extends APIController
         }
 
     }
+    // Update function assumes retrieve() has been called  in the frontend, giving you all the data you need
+    // Must pass all fields
+    public function update(Request $request){
+        $data = $request->all();
+        $query = User::find($data['id']);
+        if(!$query){
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        if($query){
+            $fileFields = ['profile', 'birth', 'tor', 'essay', 'recommendation', 'med', 'nbi', 'notice'];
+            $binaryFiles = [];
+            
+            foreach ($fileFields as $fieldName) {
+                if ($request->hasFile($fieldName)) {
+                    $file = $request->file($fieldName);
+                    $binaryFiles[$fieldName] = file_get_contents($file->getRealPath());
+                }
+            }
+            $query->first_name = $data['first_name'];
+            $query->middle_name = $data['middle_name'];
+            $query->last_name = $data['last_name'];
+            $query->profile_picture =$binaryFiles['profile'] ?? null;
+            $query->birth_certificate = $binaryFiles['birth'] ?? null;
+            $query->tor = $binaryFiles['tor'] ?? null;
+            $query->narrative_essay = $binaryFiles['essay'] ?? null;
+            $query->recommendation_letter = $binaryFiles['recommendation'] ?? null;
+            $query->medical_certificate = $binaryFiles['med'] ?? null;
+            $query->nbi_clearance = $binaryFiles['nbi'] ?? null;
+            $query->admission_notice = $binaryFiles['notice'] ?? null;
+        }
+    }
+    public function retrieveByParameter(Request $request){
+        $data = $request->all();
+        $response = AccountDetails::where($data['col'], '=' ,$data['value'])->get();
+        dd($response);
+        $this->response['data'] = $response;
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
+
 }

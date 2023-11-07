@@ -28,6 +28,9 @@ Route::prefix('/app/')->group(function () {
     Route::prefix('/account_details/')->group(function () {
         Route::post('create', [AccountDetailsController::class, 'create']);
         Route::post('delete', [AccountDetailsController::class, 'delete']);
+        Route::post('update', [AccountDetailsController::class, 'update']);
+        Route::post('retrieveByParameter', [AccountDetailsController::class, 'retrieveByParameter']);
+
     });
     
     Route::post('addComment', [CommentsController::class, 'addComments']);

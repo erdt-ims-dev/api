@@ -20,14 +20,14 @@ class CreateAccountDetails extends Migration
             $table->string('middle_name');
             $table->string('last_name');
             $table->string('program')->nullable();
-            $table->binary('profile_picture');
-            $table->binary('birth_certificate')->nullable();
-            $table->binary('tor')->nullable();
-            $table->binary('narrative_essay')->nullable();
-            $table->binary('recommendation_letter')->nullable();
-            $table->binary('medical_certificate')->nullable();
-            $table->binary('nbi_clearance')->nullable();
-            $table->binary('admission_notice')->nullable();
+            $table->binary('profile_picture', 16777215)->nullable();
+            $table->binary('birth_certificate', 16777215)->nullable();
+            $table->binary('tor', 16777215)->nullable();
+            $table->binary('narrative_essay', 16777215)->nullable();
+            $table->binary('recommendation_letter', 16777215)->nullable();
+            $table->binary('medical_certificate', 16777215)->nullable();
+            $table->binary('nbi_clearance', 16777215)->nullable();
+            $table->binary('admission_notice', 16777215)->nullable();
             $table->timestamps();
             $table->softDeletes();
 
