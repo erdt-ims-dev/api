@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AdminSystemMessage extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, UUID;
     protected $table = 'admin_system_message';
     protected $fillable = [
         'admin_id',

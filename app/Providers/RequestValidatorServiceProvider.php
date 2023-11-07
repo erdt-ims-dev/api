@@ -48,15 +48,13 @@ class RequestValidatorServiceProvider extends ServiceProvider
     }
     static function forgotPasswordValidator($data){
         $validate = Validator::make($data, [
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email',
         ]);
-
-        if($validate->fails()){
+        if($validate->passes()){
+            return true;
+        } else{
             return false;
         }
 
-        if($validate->passes()){
-            return true;
-        }
     }
 }

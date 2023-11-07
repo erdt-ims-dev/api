@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Staff extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, UUID;
     protected $table = 'staff';
     protected $fillable = ['user_id','password', 'account_type'];
 }

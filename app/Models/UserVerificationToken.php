@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserVerificationToken extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, UUID;
     protected $table = 'user_verification_token';
     protected $fillable = [
         'user_id',

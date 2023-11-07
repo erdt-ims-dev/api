@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PasswordResets extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, UUID;
 
     protected $table='password_resets';
     protected $fillable = ['user_id', 'token', "expires_at"];

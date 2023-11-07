@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentsController;
-
+use App\Http\Controllers\AccountDetailsController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -25,6 +25,10 @@ Route::prefix('/app/')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('forgot_password', [AuthController::class, 'forgotPassword']);
 
+    Route::prefix('/account_details/')->group(function () {
+        Route::post('create', [AccountDetailsController::class, 'create']);
+        Route::post('delete', [AccountDetailsController::class, 'delete']);
+    });
     
     Route::post('addComment', [CommentsController::class, 'addComments']);
 });

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class LoginAttempts extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, UUID;
     protected $table = 'login_attempts';
     protected $fillable = [
         'account_id',

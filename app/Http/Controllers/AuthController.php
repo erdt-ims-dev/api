@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 
 use App\Providers\RequestValidatorServiceProvider;
 use Laravel\Sanctum\Sanctum;
@@ -31,7 +32,7 @@ class AuthController extends APIController
             return $this->getResponse();
         }
     }
-
+    // Used when using the registration form
     public function insertNew($data)
     {
         try {
@@ -63,7 +64,25 @@ class AuthController extends APIController
             return $this->getResponse();
         }
     }
-
+    //used when manually creating an account - admin panel
+    public function newUser($data){
+        $userUuid = Str::orderedUuid();
+        $valid = RequestValidatorServiceProvider::registerValidator($data);
+        if($valid){
+            $user = new User();
+            $user->id = $userUuid;
+            $user->email = $data['email'];
+            $user->account_type = 'Not set';
+            $user->password = Hash::make($data['password']);
+            $user->status = 'Not verified';
+            $user->save();
+            return $userUuid;
+        }
+        if(!$valid){
+            return null;
+        }
+        
+    }
     public function login(Request $request)
     {
         $data = $request->all();
@@ -128,18 +147,15 @@ class AuthController extends APIController
     public function forgotPassword(Request $request)
     {
         $data = $request->all();
-
         $valid = RequestValidatorServiceProvider::forgotPasswordValidator($data);
-
         if (!$valid) {
-            $this->error = 'Invalid Data Provided';
-            $this->status = 500;
-            return $this->getError();
+            $this->response['error'] = 'Invalid Data Provided';
+            $this->response['status'] = 500;
+            return $this->getResponse();
         }
 
         try {
             $response = Password::sendResetLink(['email' => $data['email']]);
-
             if ($response === Password::RESET_LINK_SENT) {
                 $this->response['data'] = true;
                 $this->response['status'] = 200;

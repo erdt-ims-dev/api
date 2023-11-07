@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Notification extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, UUID;
     protected $table = 'notification';
     protected $fillable = [
         'user_id',

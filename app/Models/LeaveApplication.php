@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class LeaveApplication extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, UUID;
     protected $table = 'scholar_leave_application';
     protected $fillable = [
         'user_id',

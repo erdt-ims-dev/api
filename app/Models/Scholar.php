@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Scholar extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, UUID;
     protected $table = 'scholar';
     protected $fillable = [
         'user_id',
