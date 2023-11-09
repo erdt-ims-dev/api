@@ -31,7 +31,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('delete', [AccountDetailsController::class, 'delete']);
         Route::post('update', [AccountDetailsController::class, 'update']);
         Route::post('retrieveByParameter', [AccountDetailsController::class, 'retrieveByParameter']);
-
+        Route::post('retrieveAll', [AccountDetailsController::class, 'retrieveAll']);
     });
     Route::prefix('/leave/')->group(function () {
         Route::post('create', [LeaveApplicationController::class, 'create']);
