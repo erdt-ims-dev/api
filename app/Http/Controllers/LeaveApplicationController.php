@@ -33,31 +33,64 @@ class LeaveApplicationController extends APIController
         }
     }
     
-    public function retrievebyParameter($id) {
+    public function retrievebyParameter(Request $request)    {
         
-        $leaveapplication = Item::findOrFail($id);
-        return response()->json($leaveapplication);
+        // $comment = Item::findOrFail($id);
+        // return response()->json($comment);
+    
+        $data = $request->all();
+        $response = LeaveApplication::where($data['col'], '=', $data['value'])->get();
+        $this->response['data'] = $response[0];
+        $this->response['status'] = 200;
+        return $this->getResponse();
     }
 
-    public function update($id) {
-        $leaveapplication = Item::findOrFail($id);
+    public function retrieveAll() {
 
-        $validatedData = $request->validate([
-            'user_id' => 'required',
-            'leave_start' => 'required',
-            'leave_end' => 'required',
-            'leave_reason' => 'required',
-            'status' => 'required',
-        ]);
+        $response = LeaveApplication::all();
 
-        $leaveapplication->update($validatedData);
-        return response()->json($leaveapplication, 200);
+        $this->response['data'] = $response;
+        $this->response['status'] = 200;
+        return $this->getResponse();
     }
 
-    public function delete($id) {
-        $leaveapplication = Item::findOrFail($id);
+    public function update(Request $request) {
+
+        $data = $request->all();
+        $query = LeaveApplication::find($data['id']);
+        if(!$query){
+            $this->response['error'] = "Comment Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        if($query){
+            $query->user_id = $data['user_id'];
+            $query->leave_start = $data['leave_start'];
+            $query->leave_end = $data['leave_end'];
+            $query->leave_reason = $data['leave_reason'];
+            $query->status = $data['status'];
+            $query->save();
+            $this->response['data'] = true;
+            $this->response['status'] = 200;
+            return $this->getResponse();
+        }
+    }
+
+    public function delete(Request $request) {
         
-        $leaveapplication->delete($id);
-        return response()->json($leaveapplication, 200);
+        $data = $request->all();
+        $query = LeaveApplication::find($data['id']);
+        if(!$query){
+            $this->response['error'] = "Application Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        if($query){
+            $query->delete();
+            $this->response['data'] = true;
+            $this->response['status'] = 200;
+            return $this->getResponse();
+        }
     }
+
 }

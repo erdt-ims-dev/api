@@ -40,7 +40,7 @@ class CommentsController extends APIController
         // return response()->json($comment);
     
         $data = $request->all();
-        $response = AccountDetails::where($data['col'], '=', $data['value'])->get();
+        $response = Comments::where($data['col'], '=', $data['value'])->get();
         $this->response['data'] = $response[0];
         $this->response['status'] = 200;
         return $this->getResponse();
@@ -89,4 +89,5 @@ class CommentsController extends APIController
             return $this->getResponse();
         }
     }
+
 }
