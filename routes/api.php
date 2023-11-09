@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentsController;
 use App\Http\Controllers\AccountDetailsController;
+use App\Http\Controllers\LeaveApplicationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -30,6 +31,13 @@ Route::prefix('/app/')->group(function () {
         Route::post('delete', [AccountDetailsController::class, 'delete']);
         Route::post('update', [AccountDetailsController::class, 'update']);
         Route::post('retrieveByParameter', [AccountDetailsController::class, 'retrieveByParameter']);
+
+    });
+    Route::prefix('/leave/')->group(function () {
+        Route::post('create', [LeaveApplicationController::class, 'create']);
+        // Route::post('delete', [LeaveApplication::class, 'delete']);
+        // Route::post('update', [LeaveApplication::class, 'update']);
+        // Route::post('retrieveByParameter', [LeaveApplication::class, 'retrieveByParameter']);
 
     });
     
