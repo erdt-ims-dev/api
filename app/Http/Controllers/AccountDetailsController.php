@@ -114,10 +114,18 @@ class AccountDetailsController extends APIController
             $query->admission_notice = $binaryFiles['notice'] ?? null;
         }
     }
+    // This should give you an error for now
+    // This assumes all data retrieve is text, but current migration has BLOB files in it
     public function retrieveByParameter(Request $request){
         $data = $request->all();
         $response = AccountDetails::where($data['col'], '=' ,$data['value'])->get();
-        dd($response);
+        $this->response['data'] = $response[0];
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
+
+    public function retrieveAll(Request $request){
+        $response = AccountDetails::all();
         $this->response['data'] = $response;
         $this->response['status'] = 200;
         return $this->getResponse();
