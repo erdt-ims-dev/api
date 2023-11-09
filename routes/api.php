@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentsController;
 use App\Http\Controllers\AccountDetailsController;
 use App\Http\Controllers\LeaveApplicationController;
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -26,6 +27,11 @@ Route::prefix('/app/')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('forgot_password', [AuthController::class, 'forgotPassword']);
 
+    Route::prefix('/user/')->group(function () {
+        
+        Route::post('retrieveAll', [UserController::class, 'retrieveAll']);
+    });
+    
     Route::prefix('/account_details/')->group(function () {
         Route::post('create', [AccountDetailsController::class, 'create']);
         Route::post('delete', [AccountDetailsController::class, 'delete']);
