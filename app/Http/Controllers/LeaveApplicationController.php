@@ -32,4 +32,32 @@ class LeaveApplicationController extends APIController
             return $this->getResponse();
         }
     }
+    
+    public function retrievebyParameter($id) {
+        
+        $leaveapplication = Item::findOrFail($id);
+        return response()->json($leaveapplication);
+    }
+
+    public function update($id) {
+        $leaveapplication = Item::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'user_id' => 'required',
+            'leave_start' => 'required',
+            'leave_end' => 'required',
+            'leave_reason' => 'required',
+            'status' => 'required',
+        ]);
+
+        $leaveapplication->update($validatedData);
+        return response()->json($leaveapplication, 200);
+    }
+
+    public function delete($id) {
+        $leaveapplication = Item::findOrFail($id);
+        
+        $leaveapplication->delete($id);
+        return response()->json($leaveapplication, 200);
+    }
 }
