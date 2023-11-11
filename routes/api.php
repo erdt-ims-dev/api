@@ -7,6 +7,7 @@ use App\Http\Controllers\CommentsController;
 use App\Http\Controllers\AccountDetailsController;
 use App\Http\Controllers\LeaveApplicationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminSystemMessageController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -56,6 +57,13 @@ Route::prefix('/app/')->group(function () {
         Route::post('delete', [LeaveApplicationController::class, 'delete']);
     });
 
+    Route::prefix('/admin_system_message/')->group(function () {
+        Route::post('create', [AdminSystemMessageController::class, 'create']);
+        Route::post('retrievebyParameter', [AdminSystemMessageController::class, 'retrievebyParameter']);
+        Route::post('retrieveAll', [AdminSystemMessageController::class, 'retrieveAll']);
+        Route::post('update', [AdminSystemMessageController::class, 'update']);
+        Route::post('delete', [AdminSystemMessageController::class, 'delete']);
+    });
 });
 
 //testing
