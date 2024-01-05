@@ -86,6 +86,7 @@ class AccountDetailsController extends APIController
     public function update(Request $request){
         $data = $request->all();
         $query = User::find($data['id']);
+        dd();
         if(!$query){
             $this->response['error'] = "Account Not Found";
             $this->response['status'] = 401;
@@ -112,6 +113,48 @@ class AccountDetailsController extends APIController
             $query->medical_certificate = $binaryFiles['med'] ?? null;
             $query->nbi_clearance = $binaryFiles['nbi'] ?? null;
             $query->admission_notice = $binaryFiles['notice'] ?? null;
+            $query->save();
+        }
+    }
+    // alt updated method (patch)
+    public function patch(Request $request, $id){
+        $data = $request->all();
+        $query = User::find($id);
+        if(!$query){
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        if($query){
+            $fields = ['first_name', 'middle_name', 'last_name', 'profile', 'birth', 'tor', 'essay', 'recommendation', 'med', 'nbi', 'notice'];
+            $array = [];  
+            $i = 0;
+            for($i = 0 ; $i <= count($data); $i++){
+                dd($data[$fields[$i]]);
+
+                if($data[$fields[$i]] != null || undefined){
+                    array_push($array, $data[$fields[$i]]);
+                }
+            }
+            
+            foreach ($fileFields as $fieldName) {
+                if ($request->hasFile($fieldName)) {
+                    $file = $request->file($fieldName);
+                    $binaryFiles[$fieldName] = file_get_contents($file->getRealPath());
+                }
+            }
+            // $query->first_name = $data['first_name'];
+            // $query->middle_name = $data['middle_name'];
+            // $query->last_name = $data['last_name'];
+            // $query->profile_picture =$binaryFiles['profile'] ?? null;
+            // $query->birth_certificate = $binaryFiles['birth'] ?? null;
+            // $query->tor = $binaryFiles['tor'] ?? null;
+            // $query->narrative_essay = $binaryFiles['essay'] ?? null;
+            // $query->recommendation_letter = $binaryFiles['recommendation'] ?? null;
+            // $query->medical_certificate = $binaryFiles['med'] ?? null;
+            // $query->nbi_clearance = $binaryFiles['nbi'] ?? null;
+            // $query->admission_notice = $binaryFiles['notice'] ?? null;
+            $query->save();
         }
     }
     // This should give you an error for now

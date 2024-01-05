@@ -7,6 +7,7 @@ use App\Http\Controllers\CommentsController;
 use App\Http\Controllers\AccountDetailsController;
 use App\Http\Controllers\LeaveApplicationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminSystemMessageController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -25,10 +26,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::prefix('/app/')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
-    Route::post('forgot_password', [AuthController::class, 'forgotPassword']);
+    Route::post('forgot_password', [AuthController::class, 'forgot_password']);
+    
+    Route::prefix('/comments/')->group(function () {
+        Route::post('create', [CommentsController::class, 'create']);
+        Route::post('retrievebyParameter', [CommentsController::class, 'retrievebyParameter']);
+        Route::post('retrieveAll', [CommentsController::class, 'retrieveAll']);
+        Route::post('update', [CommentsController::class, 'update']);
+        Route::post('delete', [CommentsController::class, 'delete']);
+        Route::post('forgot_password', [AuthController::class, 'forgotPassword']);
+    });
 
     Route::prefix('/user/')->group(function () {
-        
         Route::post('retrieveAll', [UserController::class, 'retrieveAll']);
     });
     
@@ -36,18 +45,26 @@ Route::prefix('/app/')->group(function () {
         Route::post('create', [AccountDetailsController::class, 'create']);
         Route::post('delete', [AccountDetailsController::class, 'delete']);
         Route::post('update', [AccountDetailsController::class, 'update']);
+        Route::patch('patch/{id}', [AccountDetailsController::class, 'patch']);
         Route::post('retrieveByParameter', [AccountDetailsController::class, 'retrieveByParameter']);
         Route::post('retrieveAll', [AccountDetailsController::class, 'retrieveAll']);
     });
-    Route::prefix('/leave/')->group(function () {
-        Route::post('create', [LeaveApplicationController::class, 'create']);
-        // Route::post('delete', [LeaveApplication::class, 'delete']);
-        // Route::post('update', [LeaveApplication::class, 'update']);
-        // Route::post('retrieveByParameter', [LeaveApplication::class, 'retrieveByParameter']);
 
+    Route::prefix('/leave_application/')->group(function () {
+        Route::post('create', [LeaveApplicationController::class, 'create']);
+        Route::post('retrievebyParameter', [LeaveApplicationController::class, 'retrievebyParameter']);
+        Route::post('retrieveAll', [LeaveApplicationController::class, 'retrieveAll']);
+        Route::post('update', [LeaveApplicationController::class, 'update']);
+        Route::post('delete', [LeaveApplicationController::class, 'delete']);
     });
-    
-    Route::post('addComment', [CommentsController::class, 'addComments']);
+
+    Route::prefix('/admin_system_message/')->group(function () {
+        Route::post('create', [AdminSystemMessageController::class, 'create']);
+        Route::post('retrievebyParameter', [AdminSystemMessageController::class, 'retrievebyParameter']);
+        Route::post('retrieveAll', [AdminSystemMessageController::class, 'retrieveAll']);
+        Route::post('update', [AdminSystemMessageController::class, 'update']);
+        Route::post('delete', [AdminSystemMessageController::class, 'delete']);
+    });
 });
 
 //testing

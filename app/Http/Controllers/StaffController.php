@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-class StaffController extends Controller
+use App\Models\Staff;
+class StaffController extends APIController
 {
     //
     function create(Request $request){
         $data = $request->all();
+        $generateID = Str::orderedUuid();
+        $staff = new Staff();
+        $staff->id = $generateID;
     }
     
 }
