@@ -8,6 +8,8 @@ use App\Http\Controllers\AccountDetailsController;
 use App\Http\Controllers\LeaveApplicationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminSystemMessageController;
+
+use App\Http\Controllers\ScholarTasksController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -65,9 +67,20 @@ Route::prefix('/app/')->group(function () {
         Route::post('update', [AdminSystemMessageController::class, 'update']);
         Route::post('delete', [AdminSystemMessageController::class, 'delete']);
     });
+
+    Route::prefix('/scholar_tasks/')->group(function () {
+        Route::post('create', [ScholarTasksController::class, 'create']);
+        Route::post('retrievebyParameter', [ScholarTasksController::class, 'retrievebyParameter']);
+        Route::post('retrieveAll', [ScholarTasksController::class, 'retrieveAll']);
+        Route::post('update', [ScholarTasksController::class, 'update']);
+        Route::post('delete', [ScholarTasksController::class, 'delete']);
+    });
 });
 
 //testing
 Route::get('comments', function() {
     return 'these are the comments';
+});
+Route::get('/test', function () {
+    return response()->json(['message' => 'API is accessible']);
 });
