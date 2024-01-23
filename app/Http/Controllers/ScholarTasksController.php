@@ -21,27 +21,16 @@ class ScholarTasksController extends APIController
         $scholar = new ScholarTasks();
         $scholar->id = $scholarUuid;
         $scholar->user_id = $data['user_id']; // user_id comes from Frontend
-
+        // AWS Calls
         $midterm = $request->file('midterm_assessment')->storePublicly('public/files');
         $finals = $request->file('final_assessment')->storePublicly('public/files');
-        // $fileFields = ['midterm_assessment', 'final_assessment'];
-        // $binaryFiles = [];
-        // foreach ($fileFields as $fieldName) {
-        //     if ($request->hasFile($fieldName)) {
-        //         $file = $request->file($fieldName);
-        //         $binaryFiles[$fieldName] = file_get_contents($file->getRealPath());
-        //     }
-        // }
-        // $scholar->midterm_assessment = $binaryFiles['midterm_assessment'] ?? null;
-        // $scholar->final_assessment = $binaryFiles['final_assessment'] ?? null;
-        // $scholar->approval_status = false;
-        // $scholar->save();
+        // Shove the generated links to DB
         $scholar->midterm_assessment = "https://erdt.s3.us-east-1.amazonaws.com/$midterm";
         $scholar->final_assessment = "https://erdt.s3.us-east-1.amazonaws.com/$finals";
         $scholar->approval_status = false;
         $scholar->save();
-        $this->response['midterms_link'] =  "https://erdt.s3.us-east-1.amazonaws.com/$midterm";
-        $this->response['finals_link'] =  "https://erdt.s3.us-east-1.amazonaws.com/$finals";
+        $this->response['data'] =  "Submitted";
+        $this->response['detils'] =  $scholar;
         $this->response['status'] = 200;
         return $this->getResponse();
         
@@ -78,15 +67,9 @@ class ScholarTasksController extends APIController
             return $this->getError();
         }
         if($query){
-            $fileFields = ['midterm_assessment', 'final_assessment'];
-            $binaryFiles = [];
-            
-            foreach ($fileFields as $fieldName) {
-                if ($request->hasFile($fieldName)) {
-                    $file = $request->file($fieldName);
-                    $binaryFiles[$fieldName] = file_get_contents($file->getRealPath());
-                }
-            }
+            // idk how tf its gonna update or patch in AWS side. 
+            // Needs research
+            // maybe dont delete and create another folder for past records?    
             
             $query->midterm_assessment =$binaryFiles['midterm_assessment'] ?? null;
             $query->final_assessment = $binaryFiles['final_assessment'] ?? null;

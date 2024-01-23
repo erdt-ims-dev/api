@@ -43,19 +43,31 @@ class AccountDetailsController extends APIController
             $details = new AccountDetails();
             $details->id = Str::orderedUuid();
             $details->user_id = $uuidString;
+            // AWS Calls - Return paths to file on S3 bucket
+            $pfp = $request->file('profile')->storePublicly('public/files/' + $uuidString + '/account_files/profile/');
+            $birth = $request->file('birth')->storePublicly('public/files/' + $uuidString + '/account_files/birth/');
+            $tor = $request->file('tor')->storePublicly('public/files/' + $uuidString + '/account_files/tor/');
+            $essay = $request->file('essay')->storePublicly('public/files/' + $uuidString + '/account_files/essay/');
+            $recommendation = $request->file('recommendation')->storePublicly('public/files/' + $uuidString + '/account_files/recommendation/');
+            $medical = $request->file('medical')->storePublicly('public/files/' + $uuidString + '/account_files/medical/');
+            $nbi = $request->file('nbi')->storePublicly('public/files/' + $uuidString + '/account_files/nbi/');
+            $notice = $request->file('notice')->storePublicly('public/files/' + $uuidString + '/account_files/notice/');
+
             $details->first_name = $data['first_name'];
             $details->middle_name = $data['middle_name'];
             $details->last_name = $data['last_name'];
-            $details->profile_picture =$binaryFiles['profile'] ?? null;
-            $details->birth_certificate = $binaryFiles['birth'] ?? null;
-            $details->tor = $binaryFiles['tor'] ?? null;
-            $details->narrative_essay = $binaryFiles['essay'] ?? null;
-            $details->recommendation_letter = $binaryFiles['recommendation'] ?? null;
-            $details->medical_certificate = $binaryFiles['med'] ?? null;
-            $details->nbi_clearance = $binaryFiles['nbi'] ?? null;
-            $details->admission_notice = $binaryFiles['notice'] ?? null;
+            
+            $details->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$pfp" ?? null; // Still not sure if I should outright store the pfp image here or just use img.src that points to the AWS file in Frontend. Will do the rnedentring on FE for now
+            $details->birth_certificate = "https://erdt.s3.us-east-1.amazonaws.com/$birth"  ?? null;
+            $details->tor = "https://erdt.s3.us-east-1.amazonaws.com/$tor"  ?? null;
+            $details->narrative_essay ="https://erdt.s3.us-east-1.amazonaws.com/$essay"  ?? null;
+            $details->recommendation_letter = "https://erdt.s3.us-east-1.amazonaws.com/$recommendation"  ?? null;
+            $details->medical_certificate = "https://erdt.s3.us-east-1.amazonaws.com/$medical"  ?? null;
+            $details->nbi_clearance = "https://erdt.s3.us-east-1.amazonaws.com/$nbi"  ?? null;
+            $details->admission_notice = "https://erdt.s3.us-east-1.amazonaws.com/$notice"  ?? null;
             $details->save();
             $this->response['data'] = 'Account Details created';
+            $this->response['details'] = $details;
             return $this->getResponse();
         }catch (\Throwable $th){
             $message = $th->getMessage();

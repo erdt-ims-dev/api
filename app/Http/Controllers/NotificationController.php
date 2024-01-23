@@ -29,10 +29,6 @@ class NotificationController extends Controller
         $this->response['data'] = 'Comment added successfully';
         return $this->getResponse();
         
-        // Comments::create(['message' => $testData]);
-
-        // return response()->json(['message' => 'Test data added successfully'], 201);
-        //return $testData;
     }
 
     public function retrievebyParameter(Request $request)    {
