@@ -19,7 +19,7 @@ class CreateScholarLeaveApplicationStatusTable extends Migration
             $table->string('user_id');
             $table->string('comment_id');
             $table->string('application_status');
-            $table->binary('application_letter');
+            $table->string('application_letter');
             $table->timestamps();
             $table->softDeletes();
         });

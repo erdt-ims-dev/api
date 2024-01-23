@@ -18,7 +18,7 @@ class CreateScholarLeaveApplication extends Migration
             $table->string('user_id');
             $table->date('leave_start');
             $table->date('leave_end');
-            $table->binary('leave_reason');
+            $table->string('leave_reason');
             $table->string('status');
             $table->timestamps();
             $table->softDeletes();

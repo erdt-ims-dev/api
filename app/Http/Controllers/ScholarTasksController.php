@@ -22,21 +22,27 @@ class ScholarTasksController extends APIController
         $scholar->id = $scholarUuid;
         $scholar->user_id = $data['user_id']; // user_id comes from Frontend
 
-        $fileFields = ['midterm_assessment', 'final_assessment'];
-        $binaryFiles = [];
-        foreach ($fileFields as $fieldName) {
-            if ($request->hasFile($fieldName)) {
-                $file = $request->file($fieldName);
-                $binaryFiles[$fieldName] = file_get_contents($file->getRealPath());
-            }
-        }
-        $scholar->midterm_assessment = $binaryFiles['midterm_assessment'] ?? null;
-        $scholar->final_assessment = $binaryFiles['final_assessment'] ?? null;
+        $midterm = $request->file('midterm_assessment')->storePublicly('public/files');
+        $finals = $request->file('final_assessment')->storePublicly('public/files');
+        // $fileFields = ['midterm_assessment', 'final_assessment'];
+        // $binaryFiles = [];
+        // foreach ($fileFields as $fieldName) {
+        //     if ($request->hasFile($fieldName)) {
+        //         $file = $request->file($fieldName);
+        //         $binaryFiles[$fieldName] = file_get_contents($file->getRealPath());
+        //     }
+        // }
+        // $scholar->midterm_assessment = $binaryFiles['midterm_assessment'] ?? null;
+        // $scholar->final_assessment = $binaryFiles['final_assessment'] ?? null;
+        // $scholar->approval_status = false;
+        // $scholar->save();
+        $scholar->midterm_assessment = "https://erdt.s3.us-east-1.amazonaws.com/$midterm";
+        $scholar->final_assessment = "https://erdt.s3.us-east-1.amazonaws.com/$finals";
         $scholar->approval_status = false;
         $scholar->save();
-
-        $this->response['data'] = 'Task Created';
-        $this->response['stauts'] = 200;
+        $this->response['midterms_link'] =  "https://erdt.s3.us-east-1.amazonaws.com/$midterm";
+        $this->response['finals_link'] =  "https://erdt.s3.us-east-1.amazonaws.com/$finals";
+        $this->response['status'] = 200;
         return $this->getResponse();
         
         }catch(\Throwable $th){

@@ -129,13 +129,14 @@ class AccountDetailsController extends APIController
             $fields = ['first_name', 'middle_name', 'last_name', 'profile', 'birth', 'tor', 'essay', 'recommendation', 'med', 'nbi', 'notice'];
             $array = [];  
             $i = 0;
-            for($i = 0 ; $i <= count($data); $i++){
-                dd($data[$fields[$i]]);
+            for($i = 0 ; $i < count($data); $i++){
+                    dd($data[$fields[$i]]);
 
                 if($data[$fields[$i]] != null || undefined){
                     array_push($array, $data[$fields[$i]]);
                 }
             }
+            dd($array);
             
             foreach ($fileFields as $fieldName) {
                 if ($request->hasFile($fieldName)) {
