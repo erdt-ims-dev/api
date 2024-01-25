@@ -16,8 +16,8 @@ class CreateScholarTasksTable extends Migration
         Schema::create('scholar_tasks', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
             $table->string('user_id');
-            $table->binary('midterm_assessment');
-            $table->binary('final_assessment');
+            $table->string('midterm_assessment');
+            $table->string('final_assessment');
             $table->string('approval_status');
             $table->timestamps();
             $table->softDeletes();

@@ -13,6 +13,7 @@ class ScholarPortfolio extends Model
     protected $fillable = [
         'user_id',
         'study',
+        'study_name',
         'study_category',
         'publish_type',
         ];

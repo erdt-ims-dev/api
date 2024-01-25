@@ -22,36 +22,26 @@ class AccountDetailsController extends APIController
         // required params should include email, password for manually created new accounts
         try{
             $data = $request->all();
-            
-            // Get and store files
-            $fileFields = ['profile', 'birth', 'tor', 'essay', 'recommendation', 'med', 'nbi', 'notice'];
-            $binaryFiles = [];
-        
-            foreach ($fileFields as $fieldName) {
-                if ($request->hasFile($fieldName)) {
-                    $file = $request->file($fieldName);
-                    $binaryFiles[$fieldName] = file_get_contents($file->getRealPath());
-                }
-            }
 
             // get AuthController
 
             $auth = new AuthController();
             $uuidObject = $auth->newUser($data);  // This takes into account if function is called when manual creating an account through the admin panel
             $uuidString = $uuidObject->toString();
+            $hashUuid = Hash::make($uuidString);
             // Create and save AccountDetails
             $details = new AccountDetails();
             $details->id = Str::orderedUuid();
             $details->user_id = $uuidString;
             // AWS Calls - Return paths to file on S3 bucket
-            $pfp = $request->file('profile')->storePublicly('public/files/' + $uuidString + '/account_files/profile/');
-            $birth = $request->file('birth')->storePublicly('public/files/' + $uuidString + '/account_files/birth/');
-            $tor = $request->file('tor')->storePublicly('public/files/' + $uuidString + '/account_files/tor/');
-            $essay = $request->file('essay')->storePublicly('public/files/' + $uuidString + '/account_files/essay/');
-            $recommendation = $request->file('recommendation')->storePublicly('public/files/' + $uuidString + '/account_files/recommendation/');
-            $medical = $request->file('medical')->storePublicly('public/files/' + $uuidString + '/account_files/medical/');
-            $nbi = $request->file('nbi')->storePublicly('public/files/' + $uuidString + '/account_files/nbi/');
-            $notice = $request->file('notice')->storePublicly('public/files/' + $uuidString + '/account_files/notice/');
+            $pfp = $request->file('profile')->storePublicly('public/files/' + $hashUuid + '/account_files/profile/');
+            $birth = $request->file('birth')->storePublicly('public/files/' + $hashUuid + '/account_files/birth/');
+            $tor = $request->file('tor')->storePublicly('public/files/' + $hashUuid + '/account_files/tor/');
+            $essay = $request->file('essay')->storePublicly('public/files/' + $hashUuid + '/account_files/essay/');
+            $recommendation = $request->file('recommendation')->storePublicly('public/files/' + $hashUuid + '/account_files/recommendation/');
+            $medical = $request->file('medical')->storePublicly('public/files/' + $hashUuid + '/account_files/medical/');
+            $nbi = $request->file('nbi')->storePublicly('public/files/' + $hashUuid + '/account_files/nbi/');
+            $notice = $request->file('notice')->storePublicly('public/files/' + $hashUuid + '/account_files/notice/');
 
             $details->first_name = $data['first_name'];
             $details->middle_name = $data['middle_name'];

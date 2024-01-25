@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminSystemMessageController;
 
 use App\Http\Controllers\ScholarTasksController;
+use App\Http\Controllers\ScholarPortfolioController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -74,6 +75,13 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveAll', [ScholarTasksController::class, 'retrieveAll']);
         Route::post('update', [ScholarTasksController::class, 'update']);
         Route::post('delete', [ScholarTasksController::class, 'delete']);
+    });
+    Route::prefix('/scholar_portfolio/')->group(function () {
+        Route::post('create', [ScholarPortfolioController::class, 'create']);
+        Route::post('retrievebyParameter', [ScholarPortfolioController::class, 'retrievebyParameter']);
+        Route::post('retrieveAll', [ScholarPortfolioController::class, 'retrieveAll']);
+        Route::post('update', [ScholarPortfolioController::class, 'update']);
+        Route::post('delete', [ScholarPortfolioController::class, 'delete']);
     });
 });
 
