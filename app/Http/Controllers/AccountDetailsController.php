@@ -28,33 +28,32 @@ class AccountDetailsController extends APIController
             $auth = new AuthController();
             $uuidObject = $auth->newUser($data);  // This takes into account if function is called when manual creating an account through the admin panel
             $uuidString = $uuidObject->toString();
-            $hashUuid = Hash::make($uuidString);
             // Create and save AccountDetails
             $details = new AccountDetails();
             $details->id = Str::orderedUuid();
             $details->user_id = $uuidString;
             // AWS Calls - Return paths to file on S3 bucket
-            $pfp = $request->file('profile')->storePublicly('public/files/' + $hashUuid + '/account_files/profile/');
-            $birth = $request->file('birth')->storePublicly('public/files/' + $hashUuid + '/account_files/birth/');
-            $tor = $request->file('tor')->storePublicly('public/files/' + $hashUuid + '/account_files/tor/');
-            $essay = $request->file('essay')->storePublicly('public/files/' + $hashUuid + '/account_files/essay/');
-            $recommendation = $request->file('recommendation')->storePublicly('public/files/' + $hashUuid + '/account_files/recommendation/');
-            $medical = $request->file('medical')->storePublicly('public/files/' + $hashUuid + '/account_files/medical/');
-            $nbi = $request->file('nbi')->storePublicly('public/files/' + $hashUuid + '/account_files/nbi/');
-            $notice = $request->file('notice')->storePublicly('public/files/' + $hashUuid + '/account_files/notice/');
+            $pfp = $request->file('profile')->storePublicly('users/'.$uuidString.'/account_files/profile/');
+            $birth = $request->file('birth')->storePublicly('users/'.$uuidString.'/account_files/birth/');
+            $tor = $request->file('tor')->storePublicly('users/'.$uuidString.'/account_files/tor/');
+            $essay = $request->file('essay')->storePublicly('users/'.$uuidString.'/account_files/essay/');
+            $recommendation = $request->file('recommendation')->storePublicly('users/'.$uuidString.'/account_files/recommendation/');
+            $medical = $request->file('medical')->storePublicly('users/'.$uuidString.'/account_files/medical/');
+            $nbi = $request->file('nbi')->storePublicly('users/'.$uuidString.'/account_files/nbi/');
+            $notice = $request->file('notice')->storePublicly('users/'.$uuidString.'/account_files/notice/');
 
             $details->first_name = $data['first_name'];
             $details->middle_name = $data['middle_name'];
             $details->last_name = $data['last_name'];
             
-            $details->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$pfp" ?? null; // Still not sure if I should outright store the pfp image here or just use img.src that points to the AWS file in Frontend. Will do the rnedentring on FE for now
-            $details->birth_certificate = "https://erdt.s3.us-east-1.amazonaws.com/$birth"  ?? null;
-            $details->tor = "https://erdt.s3.us-east-1.amazonaws.com/$tor"  ?? null;
-            $details->narrative_essay ="https://erdt.s3.us-east-1.amazonaws.com/$essay"  ?? null;
-            $details->recommendation_letter = "https://erdt.s3.us-east-1.amazonaws.com/$recommendation"  ?? null;
-            $details->medical_certificate = "https://erdt.s3.us-east-1.amazonaws.com/$medical"  ?? null;
-            $details->nbi_clearance = "https://erdt.s3.us-east-1.amazonaws.com/$nbi"  ?? null;
-            $details->admission_notice = "https://erdt.s3.us-east-1.amazonaws.com/$notice"  ?? null;
+            $details->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/{$pfp}" ?? null; // Still not sure if I should outright store the pfp image here or just use img.src that points to the AWS file in Frontend. Will do the rnedentring on FE for now
+            $details->birth_certificate = "https://erdt.s3.us-east-1.amazonaws.com/{$birth}"  ?? null;
+            $details->tor = "https://erdt.s3.us-east-1.amazonaws.com/{$tor}"  ?? null;
+            $details->narrative_essay ="https://erdt.s3.us-east-1.amazonaws.com/{$essay}"  ?? null;
+            $details->recommendation_letter = "https://erdt.s3.us-east-1.amazonaws.com/{$recommendation}"  ?? null;
+            $details->medical_certificate = "https://erdt.s3.us-east-1.amazonaws.com/{$medical}"  ?? null;
+            $details->nbi_clearance = "https://erdt.s3.us-east-1.amazonaws.com/{$nbi}"  ?? null;
+            $details->admission_notice = "https://erdt.s3.us-east-1.amazonaws.com/{$notice}"  ?? null;
             $details->save();
             $this->response['data'] = 'Account Details created';
             $this->response['details'] = $details;
@@ -88,87 +87,95 @@ class AccountDetailsController extends APIController
     public function update(Request $request){
         $data = $request->all();
         $query = User::find($data['id']);
-        dd();
         if(!$query){
             $this->response['error'] = "Account Not Found";
             $this->response['status'] = 401;
             return $this->getError();
         }
         if($query){
-            $fileFields = ['profile', 'birth', 'tor', 'essay', 'recommendation', 'med', 'nbi', 'notice'];
+            
+            $fileFields = ['profile', 'birth', 'tor', 'essay', 'recommendation', 'medical', 'nbi', 'notice'];
             $binaryFiles = [];
             
             foreach ($fileFields as $fieldName) {
                 if ($request->hasFile($fieldName)) {
-                    $file = $request->file($fieldName);
-                    $binaryFiles[$fieldName] = file_get_contents($file->getRealPath());
+                    $file = $request->file($fieldName)->storePublicly('users/'.$data['id'].'/account_files/profile/');
+
+                    $binaryFiles[$fieldName] = $file;
                 }
             }
             $query->first_name = $data['first_name'];
             $query->middle_name = $data['middle_name'];
             $query->last_name = $data['last_name'];
-            $query->profile_picture =$binaryFiles['profile'] ?? null;
-            $query->birth_certificate = $binaryFiles['birth'] ?? null;
-            $query->tor = $binaryFiles['tor'] ?? null;
-            $query->narrative_essay = $binaryFiles['essay'] ?? null;
-            $query->recommendation_letter = $binaryFiles['recommendation'] ?? null;
-            $query->medical_certificate = $binaryFiles['med'] ?? null;
-            $query->nbi_clearance = $binaryFiles['nbi'] ?? null;
-            $query->admission_notice = $binaryFiles['notice'] ?? null;
+            // AWS
+            $pfp = $request->file('profile')->storePublicly('users/'.$hashUuid.'/account_files/profile/');
+            $birth = $request->file('birth')->storePublicly('users/' + $hashUuid + '/account_files/birth/');
+            $tor = $request->file('tor')->storePublicly('users/' + $hashUuid + '/account_files/tor/');
+            $essay = $request->file('essay')->storePublicly('users/' + $hashUuid + '/account_files/essay/');
+            $recommendation = $request->file('recommendation')->storePublicly('users/' + $hashUuid + '/account_files/recommendation/');
+            $medical = $request->file('medical')->storePublicly('users/' + $hashUuid + '/account_files/medical/');
+            $nbi = $request->file('nbi')->storePublicly('users/' + $hashUuid + '/account_files/nbi/');
+            $notice = $request->file('notice')->storePublicly('users/' + $hashUuid + '/account_files/notice/');
+
+            $query->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$pfp" ?? null; // Still not sure if I should outright store the pfp image here or just use img.src that points to the AWS file in Frontend. Will do the rnedentring on FE for now
+            $query->birth_certificate = "https://erdt.s3.us-east-1.amazonaws.com/$birth"  ?? null;
+            $query->tor = "https://erdt.s3.us-east-1.amazonaws.com/$tor"  ?? null;
+            $query->narrative_essay ="https://erdt.s3.us-east-1.amazonaws.com/$essay"  ?? null;
+            $query->recommendation_letter = "https://erdt.s3.us-east-1.amazonaws.com/$recommendation"  ?? null;
+            $query->medical_certificate = "https://erdt.s3.us-east-1.amazonaws.com/$medical"  ?? null;
+            $query->nbi_clearance = "https://erdt.s3.us-east-1.amazonaws.com/$nbi"  ?? null;
+            $query->admission_notice = "https://erdt.s3.us-east-1.amazonaws.com/$notice"  ?? null;
             $query->save();
         }
     }
-    // alt updated method (patch)
-    public function patch(Request $request, $id){
+    public function updateProfile(Request $request){
         $data = $request->all();
-        $query = User::find($id);
+        $query = User::find($data['id']);
         if(!$query){
             $this->response['error'] = "Account Not Found";
             $this->response['status'] = 401;
             return $this->getError();
         }
         if($query){
-            $fields = ['first_name', 'middle_name', 'last_name', 'profile', 'birth', 'tor', 'essay', 'recommendation', 'med', 'nbi', 'notice'];
-            $array = [];  
-            $i = 0;
-            for($i = 0 ; $i < count($data); $i++){
-                    dd($data[$fields[$i]]);
-
-                if($data[$fields[$i]] != null || undefined){
-                    array_push($array, $data[$fields[$i]]);
-                }
+            // AWS
+            if($request->hasFile('profile')){
+                $file = $request->file('profile')->storePublicly('users/'.$data['user_id'].'/account_files/profile/');
+                $query->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $this->response['data'] =  "Submitted";
+                $this->response['details'] =  $query;
+                $this->response['status'] = 200;
+            }else{
+                $this->response['data'] =  "Failed";
+                $this->response['details'] =  $query;
+                $this->response['status'] = 402;
             }
-            dd($array);
-            
-            foreach ($fileFields as $fieldName) {
-                if ($request->hasFile($fieldName)) {
-                    $file = $request->file($fieldName);
-                    $binaryFiles[$fieldName] = file_get_contents($file->getRealPath());
-                }
-            }
-            // $query->first_name = $data['first_name'];
-            // $query->middle_name = $data['middle_name'];
-            // $query->last_name = $data['last_name'];
-            // $query->profile_picture =$binaryFiles['profile'] ?? null;
-            // $query->birth_certificate = $binaryFiles['birth'] ?? null;
-            // $query->tor = $binaryFiles['tor'] ?? null;
-            // $query->narrative_essay = $binaryFiles['essay'] ?? null;
-            // $query->recommendation_letter = $binaryFiles['recommendation'] ?? null;
-            // $query->medical_certificate = $binaryFiles['med'] ?? null;
-            // $query->nbi_clearance = $binaryFiles['nbi'] ?? null;
-            // $query->admission_notice = $binaryFiles['notice'] ?? null;
-            $query->save();
         }
     }
-    // This should give you an error for now
-    // This assumes all data retrieve is text, but current migration has BLOB files in it
-    public function retrieveByParameter(Request $request){
+    public function updateBirth(Request $request){
         $data = $request->all();
-        $response = AccountDetails::where($data['col'], '=' ,$data['value'])->get();
-        $this->response['data'] = $response[0];
-        $this->response['status'] = 200;
-        return $this->getResponse();
+        $query = User::find($data['id']);
+        if(!$query){
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        if($query){
+            // AWS
+            if($request->hasFile('birth')){
+                $file = $request->file('birth')->storePublicly('users/'.$data['user_id'].'/account_files/profile/');
+                $query->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $this->response['data'] =  "Submitted";
+                $this->response['details'] =  $query;
+                $this->response['status'] = 200;
+            }else{
+                $this->response['data'] =  "failed";
+                $this->response['details'] =  $query;
+                $this->response['status'] = 402;
+            }
+        }
     }
+    // alt updated method (patch)
+    
 
     public function retrieveAll(Request $request){
         $response = AccountDetails::all();
