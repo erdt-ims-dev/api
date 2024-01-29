@@ -7,8 +7,10 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Auth\Events\Registered;
 
 use App\Providers\RequestValidatorServiceProvider;
+
 use Laravel\Sanctum\Sanctum;
 
 use App\Models\User;
@@ -56,6 +58,7 @@ class AuthController extends APIController
             $accountDetails->last_name = $data['last_name'];
             $accountDetails->save();
 
+            event(new Registered($user));
             $this->response['data'] = 'User registered';
             return $this->getResponse();
         } catch (\Throwable $th) {

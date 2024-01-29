@@ -92,6 +92,7 @@ class ScholarPortfolioController extends APIController
             $query->study = "https://erdt.s3.us-east-1.amazonaws.com/{$study}";
             $query->study_category = $data['study_category']; // case study, journal, etc.
             $query->publish_type = $data['publish_type']; // 1 for local, 2 for international
+            $query->save();
         }
     }
 }
