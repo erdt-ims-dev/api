@@ -95,6 +95,7 @@ class AccountDetailsController extends APIController
             if($request->hasFile('profile')){
                 $file = $request->file('profile')->storePublicly('users/'.$data['user_id'].'/account_files/profile/');
                 $query->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $query->save();
                 $this->response['data'] =  "Submitted";
                 $this->response['details'] =  $query;
                 $this->response['status'] = 200;
@@ -140,7 +141,8 @@ class AccountDetailsController extends APIController
             // AWS
             if($request->hasFile('tor')){
                 $file = $request->file('tor')->storePublicly('users/'.$data['user_id'].'/account_files/tor/');
-                $query->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $query->tor ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $query->save();
                 $this->response['data'] =  "Submitted";
                 $this->response['details'] =  $query;
                 $this->response['status'] = 200;
@@ -163,7 +165,8 @@ class AccountDetailsController extends APIController
             // AWS
             if($request->hasFile('essay')){
                 $file = $request->file('essay')->storePublicly('users/'.$data['user_id'].'/account_files/essay/');
-                $query->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $query->narrative_essay ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $query->save();
                 $this->response['data'] =  "Submitted";
                 $this->response['details'] =  $query;
                 $this->response['status'] = 200;
@@ -186,7 +189,8 @@ class AccountDetailsController extends APIController
             // AWS
             if($request->hasFile('recommendation')){
                 $file = $request->file('essay')->storePublicly('users/'.$data['user_id'].'/account_files/recommendation/');
-                $query->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $query->recommendation_letter ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $query->save();
                 $this->response['data'] =  "Submitted";
                 $this->response['details'] =  $query;
                 $this->response['status'] = 200;
@@ -209,7 +213,8 @@ class AccountDetailsController extends APIController
             // AWS
             if($request->hasFile('medical')){
                 $file = $request->file('medical')->storePublicly('users/'.$data['user_id'].'/account_files/medical/');
-                $query->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $query->medical_certificate ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $query->save();
                 $this->response['data'] =  "Submitted";
                 $this->response['details'] =  $query;
                 $this->response['status'] = 200;
@@ -232,7 +237,8 @@ class AccountDetailsController extends APIController
             // AWS
             if($request->hasFile('nbi')){
                 $file = $request->file('medical')->storePublicly('users/'.$data['user_id'].'/account_files/nbi/');
-                $query->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $query->nbi_clearance ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $query->save();
                 $this->response['data'] =  "Submitted";
                 $this->response['details'] =  $query;
                 $this->response['status'] = 200;
@@ -255,7 +261,8 @@ class AccountDetailsController extends APIController
             // AWS
             if($request->hasFile('notice')){
                 $file = $request->file('medical')->storePublicly('users/'.$data['user_id'].'/account_files/notice/');
-                $query->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $query->admission_notice ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $query->save();
                 $this->response['data'] =  "Submitted";
                 $this->response['details'] =  $query;
                 $this->response['status'] = 200;
