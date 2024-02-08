@@ -22,7 +22,7 @@ class AccountDetailsController extends APIController
         // required params should include email, password for manually created new accounts
         try{
             $data = $request->all();
-
+            $s3BaseUrl = config('app.s3_base_url');
             // get AuthController
 
             $auth = new AuthController();
@@ -45,15 +45,17 @@ class AccountDetailsController extends APIController
             $details->first_name = $data['first_name'];
             $details->middle_name = $data['middle_name'];
             $details->last_name = $data['last_name'];
+            // Account Type - 0: Admin 1: Project Coord 2: Staff 3: Scholar
+            $details->account_type = $data['account_type'];
             
-            $details->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/{$pfp}" ?? null; // Still not sure if I should outright store the pfp image here or just use img.src that points to the AWS file in Frontend. Will do the rnedentring on FE for now
-            $details->birth_certificate = "https://erdt.s3.us-east-1.amazonaws.com/{$birth}"  ?? null;
-            $details->tor = "https://erdt.s3.us-east-1.amazonaws.com/{$tor}"  ?? null;
-            $details->narrative_essay ="https://erdt.s3.us-east-1.amazonaws.com/{$essay}"  ?? null;
-            $details->recommendation_letter = "https://erdt.s3.us-east-1.amazonaws.com/{$recommendation}"  ?? null;
-            $details->medical_certificate = "https://erdt.s3.us-east-1.amazonaws.com/{$medical}"  ?? null;
-            $details->nbi_clearance = "https://erdt.s3.us-east-1.amazonaws.com/{$nbi}"  ?? null;
-            $details->admission_notice = "https://erdt.s3.us-east-1.amazonaws.com/{$notice}"  ?? null;
+            $details->profile_picture ="{$s3BaseUrl}{$pfp}" ?? null; // Still not sure if I should outright store the pfp image here or just use img.src that points to the AWS file in Frontend. Will do the rnedentring on FE for now
+            $details->birth_certificate = "{$s3BaseUrl}{$birth}"  ?? null;
+            $details->tor = "{$s3BaseUrl}{$tor}"  ?? null;
+            $details->narrative_essay ="{$s3BaseUrl}{$essay}"  ?? null;
+            $details->recommendation_letter = "{$s3BaseUrl}{$recommendation}"  ?? null;
+            $details->medical_certificate = "{$s3BaseUrl}{$medical}"  ?? null;
+            $details->nbi_clearance = "{$s3BaseUrl}{$nbi}"  ?? null;
+            $details->admission_notice = "{$s3BaseUrl}{$notice}"  ?? null;
             $details->save();
             $this->response['data'] = 'Account Details created';
             $this->response['details'] = $details;

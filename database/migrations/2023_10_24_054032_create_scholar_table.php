@@ -16,11 +16,10 @@ class CreateScholarTable extends Migration
         Schema::create('scholar', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
             $table->string('user_id');
-            $table->string('account_details_id');
-            $table->string('scholar_request_id');
-            $table->string('scholar_task_id');
-            $table->string('scholar_portfolio_id');
-            $table->string('scholar_leave_app_id');
+            $table->string('scholar_request_id')->nullable();
+            $table->string('scholar_task_id')->nullable();
+            $table->string('scholar_portfolio_id')->nullable();
+            $table->string('scholar_leave_app_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

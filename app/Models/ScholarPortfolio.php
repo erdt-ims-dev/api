@@ -11,7 +11,7 @@ class ScholarPortfolio extends Model
     use HasFactory, SoftDeletes;
     protected $table = 'scholar_portfolio';
     protected $fillable = [
-        'user_id',
+        'scholar_id',
         'study',
         'study_name',
         'study_category',

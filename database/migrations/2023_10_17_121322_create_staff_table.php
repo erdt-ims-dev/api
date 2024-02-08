@@ -11,26 +11,26 @@ class CreateStaffTable extends Migration
      *
      * @return void
      */
-    public function up()
-    {
-        Schema::create('staff', function (Blueprint $table) {
-            $table->uuid('id')->primary()->unique();
-            $table->string('user_id');
-            $table->string('password');
-            $table->integer('account_type');
-            $table->string('status');
-            $table->timestamps();
-            $table->softDeletes();
-        });
-    }
+    // public function up()
+    // {
+    //     Schema::create('staff', function (Blueprint $table) {
+    //         $table->uuid('id')->primary()->unique();
+    //         $table->string('user_id');
+    //         $table->string('password');
+    //         $table->integer('account_type');
+    //         $table->string('status');
+    //         $table->timestamps();
+    //         $table->softDeletes();
+    //     });
+    // }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::dropIfExists('staff');
-    }
+    // /**
+    //  * Reverse the migrations.
+    //  *
+    //  * @return void
+    //  */
+    // public function down()
+    // {
+    //     Schema::dropIfExists('staff');
+    // }
 }

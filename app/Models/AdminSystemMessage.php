@@ -11,8 +11,7 @@ class AdminSystemMessage extends Model
     use HasFactory, SoftDeletes;
     protected $table = 'admin_system_message';
     protected $fillable = [
-        'admin_id',
-        'scholar_id',
+        'message_by',
         'system_message',
         ];
 }

@@ -12,7 +12,7 @@ class ScholarRequestApplication extends Model
     protected $table = 'scholar_request_application';
     protected $fillable = [
         'account_details_id',
-        'user_id',
+        'scholar_id',
         'status',
         'comment_id'
         ];

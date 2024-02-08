@@ -22,6 +22,7 @@ class CommentsController extends APIController
         $data = $request->all();
         $comments = new Comments();
         $comments->id = Str::orderedUuid();
+        $comments->comment_by = $data['comment_by'];
         $comments->message = $data['message'];
         $comments->save();
 

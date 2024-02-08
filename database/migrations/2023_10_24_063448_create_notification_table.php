@@ -13,10 +13,10 @@ class CreateNotificationTable extends Migration
      */
     public function up()
     {
-        Schema::create('notification', function (Blueprint $table) {
+        Schema::create('dashboard_notification', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
-            $table->string('user_id');
-            $table->string('notif_message');
+            $table->string('to_user');
+            $table->string('message');
             $table->timestamps();
             $table->SoftDeletes();
         });

@@ -13,6 +13,7 @@ class LeaveApplicationController extends APIController
 {
     public function create(Request $request){
         $data = $request->all();
+        $s3BaseUrl = config('app.s3_base_url');
         try{
             $LeaveUuid = Str::orderedUuid();
 
@@ -21,7 +22,9 @@ class LeaveApplicationController extends APIController
             $leave->user_id = $data['user_id'];
             $leave->leave_start = $data['leave_start'];
             $leave->leave_end = $data['leave_end'];
-            $leave->leave_reason = $data['leave_reason'];
+            
+            $letter = $request->file('leave_letter')->storePublicly('users/'.$data['user_id'].'/external_files/leaves/');
+            $leave->leave_reason = "{$s3BaseUrl}{$letter}";
             $leave->status = 'pending'; 
             $leave->save();
             $this->response['data'] = "Created";

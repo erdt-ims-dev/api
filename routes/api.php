@@ -8,7 +8,7 @@ use App\Http\Controllers\AccountDetailsController;
 use App\Http\Controllers\LeaveApplicationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminSystemMessageController;
-
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ScholarTasksController;
 use App\Http\Controllers\ScholarPortfolioController;
 /*
@@ -82,6 +82,13 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveAll', [ScholarPortfolioController::class, 'retrieveAll']);
         Route::post('update', [ScholarPortfolioController::class, 'update']);
         Route::post('delete', [ScholarPortfolioController::class, 'delete']);
+    });
+    Route::prefix('/notification/')->group(function () {
+        Route::post('create', [NotificationController::class, 'create']);
+        Route::post('retrievebyParameter', [NotificationController::class, 'retrievebyParameter']);
+        Route::post('retrieveAll', [NotificationController::class, 'retrieveAll']);
+        Route::post('update', [NotificationController::class, 'update']);
+        Route::post('delete', [NotificationController::class, 'delete']);
     });
 });
 

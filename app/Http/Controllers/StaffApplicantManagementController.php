@@ -22,8 +22,8 @@ class StaffApplicantManagementController extends Controller
         $data = $request->all();
         $staffapplicant = new StaffApplicantManagement();
         $staffapplicant->id = Str::orderedUuid();
-        $staffapplicant->message = $data['scholarrequest_id'];
-        $staffapplicant->message = $data['staff_id'];
+        $staffapplicant->message = $data['scholar_request_id'];
+        $staffapplicant->message = $data['endorsed_by'];
         $staffapplicant->save();
 
         $this->response['data'] = 'Comment added successfully';

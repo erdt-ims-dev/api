@@ -12,6 +12,7 @@ class ScholarTasks extends Model
     protected $table = 'scholar_tasks';
     protected $fillable = [
         'user_id',
+        'scholar_id',
         'midterm_assessment',
         'final_assessment',
         'approval_status',

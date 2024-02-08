@@ -15,8 +15,7 @@ class CreateAdminSystemMessageTable extends Migration
     {
         Schema::create('admin_system_message', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
-            $table->string('admin_id');
-            $table->string('scholar_id');
+            $table->string('message_by');
             $table->string('system_message');
             $table->timestamps();
             $table->SoftDeletes();

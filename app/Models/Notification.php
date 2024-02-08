@@ -11,7 +11,7 @@ class Notification extends Model
     use HasFactory, SoftDeletes;
     protected $table = 'notification';
     protected $fillable = [
-        'user_id',
-        'notif_message',
+        'to_user',
+        'message',
         ];
 }

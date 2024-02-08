@@ -17,7 +17,7 @@ class AdminSystemMessageController extends Controller
         $data = $request->all();
         $query = new AdminSystemMessage();
         $query->id = $Uuid;
-        $query->scholar_id = $data['scholar_id'];
+        $query->message_by = $data['message_by'];
         $query->system_message = $data['system_message'];
         $query->save();
         }catch (\Throwable $th){
@@ -67,7 +67,7 @@ class AdminSystemMessageController extends Controller
         }
         if($query){
             // AWS
-            $query->scholar_id = $data['scholar_id'];
+            $query->message_by = $data['message_by'];
             $query->system_message = $data['system_message'];
             $query->save();
         }

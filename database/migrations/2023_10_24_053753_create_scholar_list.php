@@ -11,23 +11,23 @@ class CreateScholarList extends Migration
      *
      * @return void
      */
-    public function up()
-    {
-        Schema::create('scholar_list', function (Blueprint $table) {
-            $table->uuid('id')->primary()->unique();
-            $table->string('scholar_id');
-            $table->timestamps();
-            $table->softDeletes();
-        });
-    }
+    // public function up()
+    // {
+    //     Schema::create('scholar_list', function (Blueprint $table) {
+    //         $table->uuid('id')->primary()->unique();
+    //         $table->string('scholar_id');
+    //         $table->timestamps();
+    //         $table->softDeletes();
+    //     });
+    // }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::dropIfExists('scholar_list');
-    }
+    // /**
+    //  * Reverse the migrations.
+    //  *
+    //  * @return void
+    //  */
+    // public function down()
+    // {
+    //     Schema::dropIfExists('scholar_list');
+    // }
 }

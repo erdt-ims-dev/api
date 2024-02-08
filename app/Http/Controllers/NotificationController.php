@@ -8,25 +8,20 @@ use Illuminate\Http\Request;
 use App\Models\Notification;
 use App\Models\AccountDetails;
 
-class NotificationController extends Controller
+class NotificationController extends APIController
 {
     //
-    public function index()
-    {
-        return 'this is the comments controller';
-    }
 
     public function create(Request $request)
     {
-        //$testData = "very good job!";
         $data = $request->all();
         $notification = new Notification();
         $notification->id = Str::orderedUuid();
-        $notification->message = $data['user_id'];
-        $notification->message = $data['notif_message'];
+        $notification->user_id = $data['to_user'];
+        $notification->notif_message = $data['message'];
         $notification->save();
 
-        $this->response['data'] = 'Comment added successfully';
+        $this->response['data'] = 'Inserted';
         return $this->getResponse();
         
     }
@@ -57,13 +52,13 @@ class NotificationController extends Controller
         $data = $request->all();
         $query = Notification::find($data['id']);
         if(!$query){
-            $this->response['error'] = "Comment Not Found";
+            $this->response['error'] = " Not Found";
             $this->response['status'] = 401;
             return $this->getError();
         }
         if($query){
-            $query->message = $data['user_id'];
-            $query->message = $data['notif_message'];
+            $query->user_id = $data['to_user'];
+            $query->notif_message = $data['message'];
             $query->save();
             $this->response['data'] = true;
             $this->response['status'] = 200;
@@ -76,7 +71,7 @@ class NotificationController extends Controller
         $data = $request->all();
         $query = Notification::find($data['id']);
         if(!$query){
-            $this->response['error'] = "Comment Not Found";
+            $this->response['error'] = " Not Found";
             $this->response['status'] = 401;
             return $this->getError();
         }

@@ -30,15 +30,15 @@ class ScholarTasksController extends APIController
         $scholar = new ScholarTasks();
         $scholar->id = $scholarUuid;
         $scholar->user_id = $data['user_id']; // user_id comes from Frontend
-
+        $s3BaseUrl = config('app.s3_base_url');
 
         // AWS Calls
         $midterm = $request->file('midterm_assessment')->storePubliclyAs('users/'.$data['user_id'].'/academic_files/asessments', "midterm_asessment_".$formatted);
         $finals = $request->file('final_assessment')->storePubliclyAs('users/'.$data['user_id'].'/academic_files/asessments', "final_assessment_".$formatted);
         
         // Shove the generated links to DB
-        $scholar->midterm_assessment = "https://erdt.s3.us-east-1.amazonaws.com/{$midterm}";
-        $scholar->final_assessment = "https://erdt.s3.us-east-1.amazonaws.com/{$finals}";
+        $scholar->midterm_assessment = "{$s3BaseUrl}{$midterm}";
+        $scholar->final_assessment = "{$s3BaseUrl}{$finals}";
         $scholar->approval_status = false;
         $scholar->save();
         $this->response['data'] =  "Submitted";

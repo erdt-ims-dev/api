@@ -11,7 +11,7 @@ class StaffApplicantManagement extends Model
     use HasFactory, SoftDeletes;
     protected $table = 'staff_applicant_management';
     protected $fillable = [
-        'scholarrequest_id',
-        'staff_id',
+        'scholar_request_id',
+        'endorsed_by',
         ];
 }

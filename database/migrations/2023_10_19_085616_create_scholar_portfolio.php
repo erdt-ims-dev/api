@@ -15,9 +15,9 @@ class CreateScholarPortfolio extends Migration
     {
         Schema::create('scholar_portfolio', function (Blueprint $table) {
             $table->uuid('id')->primary()->unique();
-            $table->string('user_id');
-            $table->string('study_name');
+            $table->string('scholar_id');
             $table->string('study');
+            $table->string('study_name');
             $table->string('study_category');
             $table->string('publish_type');
             $table->timestamps();

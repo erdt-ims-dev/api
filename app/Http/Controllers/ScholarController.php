@@ -14,7 +14,6 @@ class ScholarController extends Controller
         $data = $request->all();
         $query = new Scholar();
         $query->user_id = $data['user_id'];
-        $query->account_details_id = $data['account_details_id'];
         $query->scholar_request_id = $data['scholar_request_id'];
         $query->scholar_task_id = $data['scholar_task_id'];
         $query->scholar_portfolio_id = $data['scholar_portfolio_id'];
@@ -50,5 +49,22 @@ class ScholarController extends Controller
         $this->response['data'] = $response;
         $this->response['status'] = 200;
         return $this->getResponse();
+    }
+    public function update(Request $request){
+        $data = $request->all();
+        $query = Scholar::find($data['id']);
+        if(!$query){
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        if($query){
+        $query->user_id = $data['user_id'];
+        $query->scholar_request_id = $data['scholar_request_id'];
+        $query->scholar_task_id = $data['scholar_task_id'];
+        $query->scholar_portfolio_id = $data['scholar_portfolio_id'];
+        $query->scholar_leave_app_id = $data['scholar_leave_app_id'];
+        $query->save();
+        }
     }
 }

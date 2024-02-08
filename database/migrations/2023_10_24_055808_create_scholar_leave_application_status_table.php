@@ -11,27 +11,26 @@ class CreateScholarLeaveApplicationStatusTable extends Migration
      *
      * @return void
      */
-    public function up()
-    {
-        Schema::create('scholar_leave_application_status', function (Blueprint $table) {
-            $table->uuid('id')->primary()->unique();
-            $table->string('scholar_leave_app_id');
-            $table->string('user_id');
-            $table->string('comment_id');
-            $table->string('application_status');
-            $table->string('application_letter');
-            $table->timestamps();
-            $table->softDeletes();
-        });
-    }
+    // public function up()     merged with ScholarTable
+    // {
+    //     Schema::create('scholar_leave_application_status', function (Blueprint $table) {
+    //         $table->uuid('id')->primary()->unique();
+    //         $table->string('scholar_leave_app_id');
+    //         $table->string('comment_id');
+    //         $table->string('application_status');
+    //         $table->string('application_letter');
+    //         $table->timestamps();
+    //         $table->softDeletes();
+    //     });
+    // }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::dropIfExists('scholar_leave_application_status');
-    }
+    // /**
+    //  * Reverse the migrations.
+    //  *
+    //  * @return void
+    //  */
+    // public function down()
+    // {
+    //     Schema::dropIfExists('scholar_leave_application_status');
+    // }
 }
