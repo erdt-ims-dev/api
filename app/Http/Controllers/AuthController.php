@@ -24,10 +24,17 @@ class AuthController extends APIController
 
     public function register(Request $requests){
         $data = $requests->all();
-        //validate
+        // validate input values
         $valid = RequestValidatorServiceProvider::registerValidator($data);
         if ($valid) {
-            return $this->insertNew($data);
+            $response = User::where("email", '=' ,$data['email'])->get();
+            if($response->isEmpty()){
+                return $this->insertNew($data);
+            }else{
+                $this->response['error'] = "Email already exists";
+                $this->response['status'] = 401;
+                return $this->getResponse();   
+            }
         }else{
             $this->response['error'] = $valid['error'];
             $this->response['status'] = 401;
