@@ -14,7 +14,7 @@ class CreateUserVerificationTokenTable extends Migration
     public function up()
     {
         Schema::create('user_verification_token', function (Blueprint $table) {
-            $table->uuid('id')->primary()->unique();
+            $table->uuid('id')->primary();
             $table->string('user_id');
             $table->string('status');
             $table->timestamps();

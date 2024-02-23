@@ -11,39 +11,37 @@ use App\Models\StaffApplicantManagement;
 class StaffApplicantManagementController extends Controller
 {
     //
-    public function index()
-    {
-        return 'this is the staff applicant management controller';
-    }
+    
+    // not yet implemented 2-20-24
 
     public function create(Request $request)
     {
         //$testData = "very good job!";
         $data = $request->all();
         $staffapplicant = new StaffApplicantManagement();
-        $staffapplicant->id = Str::orderedUuid();
+        $staffapplicant->id = Str::uuid();
         $staffapplicant->message = $data['scholar_request_id'];
         $staffapplicant->message = $data['endorsed_by'];
         $staffapplicant->save();
 
         $this->response['data'] = 'Comment added successfully';
         return $this->getResponse();
-        
-        // Comments::create(['message' => $testData]);
-
-        // return response()->json(['message' => 'Test data added successfully'], 201);
-        //return $testData;
     }
 
     public function retrievebyParameter(Request $request)    {
-        
-        // $comment = Item::findOrFail($id);
-        // return response()->json($comment);
     
         $data = $request->all();
         $response = StaffApplicantManagement::where($data['col'], '=', $data['value'])->get();
-        $this->response['data'] = $response[0];
-        $this->response['status'] = 200;
+        if ($response->isEmpty()) {
+            // If no results are found, return an appropriate response
+            $this->response['error'] = 'No matching records found.';
+            $this->response['status'] = 404;
+        } else {
+            // If results are found, return the first record
+            $this->response['data'] = $response[0];
+            $this->response['status'] = 200;
+        }
+    
         return $this->getResponse();
     }
 

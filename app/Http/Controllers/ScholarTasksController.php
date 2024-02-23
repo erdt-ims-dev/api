@@ -19,7 +19,7 @@ class ScholarTasksController extends APIController
         try{
         
         // Helpers
-        $scholarUuid = Str::orderedUuid();
+        $scholarUuid = Str::uuid()->toString();
         // $userUuid = Str::orderedUuid();
 
         $time = Carbon::now();
@@ -106,8 +106,16 @@ class ScholarTasksController extends APIController
     public function retrieveByParameter(Request $request){
         $data = $request->all();
         $response = ScholarTasks::where($data['col'], '=' ,$data['value'])->get();
-        $this->response['data'] = $response[0];
-        $this->response['status'] = 200;
+        if ($response->isEmpty()) {
+            // If no results are found, return an appropriate response
+            $this->response['error'] = 'No matching records found.';
+            $this->response['status'] = 404;
+        } else {
+            // If results are found, return the first record
+            $this->response['data'] = $response[0];
+            $this->response['status'] = 200;
+        }
+    
         return $this->getResponse();
     }
     public function retrieveAll(Request $request){

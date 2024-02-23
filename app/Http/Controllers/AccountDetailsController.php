@@ -18,6 +18,7 @@ use App\Http\Controllers\AuthController;
 
 class AccountDetailsController extends APIController
 {
+    // 2-20-24 update statements are not yet updated in routes
     public function create(Request $request){
         // required params should include email, password for manually created new accounts
         try{
@@ -30,7 +31,7 @@ class AccountDetailsController extends APIController
             $uuidString = $uuidObject->toString();
             // Create and save AccountDetails
             $details = new AccountDetails();
-            $details->id = Str::orderedUuid();
+            $details->id = Str::uuid()->toString();
             $details->user_id = $uuidString;
             // AWS Calls - Return paths to file on S3 bucket
             $pfp = $request->file('profile')->storePublicly('users/'.$uuidString.'/account_files/profile/');
@@ -285,8 +286,17 @@ class AccountDetailsController extends APIController
     public function retrieveByParameter(Request $request){
         $data = $request->all();
         $response = AccountDetails::where($data['col'], '=' ,$data['value'])->get();
-        $this->response['data'] = $response[0];
-        $this->response['status'] = 200;
+        
+        if ($response->isEmpty()) {
+            // If no results are found, return an appropriate response
+            $this->response['error'] = 'No matching records found.';
+            $this->response['status'] = 404;
+        } else {
+            // If results are found, return the first record
+            $this->response['data'] = $response[0];
+            $this->response['status'] = 200;
+        }
+    
         return $this->getResponse();
     }
 }

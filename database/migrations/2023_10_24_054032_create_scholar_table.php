@@ -14,7 +14,7 @@ class CreateScholarTable extends Migration
     public function up()
     {
         Schema::create('scholar', function (Blueprint $table) {
-            $table->uuid('id')->primary()->unique();
+            $table->uuid('id')->primary();
             $table->string('user_id');
             $table->string('scholar_request_id')->nullable();
             $table->string('scholar_task_id')->nullable();

@@ -12,7 +12,7 @@ class AdminSystemMessageController extends Controller
     //
     public function create(Request $request){
         
-        $Uuid = Str::orderedUuid();
+        $Uuid = Str::uuid()->toString();
         try{
         $data = $request->all();
         $query = new AdminSystemMessage();
@@ -52,8 +52,16 @@ class AdminSystemMessageController extends Controller
     public function retrieveByParameter(Request $request){
         $data = $request->all();
         $response = AdminSystemMessage::where($data['col'], '=' ,$data['value'])->get();
-        $this->response['data'] = $response[0];
-        $this->response['status'] = 200;
+        if ($response->isEmpty()) {
+            // If no results are found, return an appropriate response
+            $this->response['error'] = 'No matching records found.';
+            $this->response['status'] = 404;
+        } else {
+            // If results are found, return the first record
+            $this->response['data'] = $response[0];
+            $this->response['status'] = 200;
+        }
+    
         return $this->getResponse();
     }
 

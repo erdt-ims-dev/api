@@ -14,7 +14,7 @@ class CreateNotificationTable extends Migration
     public function up()
     {
         Schema::create('dashboard_notification', function (Blueprint $table) {
-            $table->uuid('id')->primary()->unique();
+            $table->uuid('id')->primary();
             $table->string('to_user');
             $table->string('message');
             $table->timestamps();

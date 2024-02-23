@@ -21,29 +21,29 @@ class CommentsController extends APIController
         //$testData = "very good job!";
         $data = $request->all();
         $comments = new Comments();
-        $comments->id = Str::orderedUuid();
+        $comments->id = Str::uuid()->toString();
         $comments->comment_by = $data['comment_by'];
         $comments->message = $data['message'];
         $comments->save();
 
         $this->response['data'] = 'Comment added successfully';
         return $this->getResponse();
-        
-        // Comments::create(['message' => $testData]);
-
-        // return response()->json(['message' => 'Test data added successfully'], 201);
-        //return $testData;
     }
 
     public function retrievebyParameter(Request $request)    {
-        
-        // $comment = Item::findOrFail($id);
-        // return response()->json($comment);
     
         $data = $request->all();
         $response = Comments::where($data['col'], '=', $data['value'])->get();
-        $this->response['data'] = $response[0];
-        $this->response['status'] = 200;
+        if ($response->isEmpty()) {
+            // If no results are found, return an appropriate response
+            $this->response['error'] = 'No matching records found.';
+            $this->response['status'] = 404;
+        } else {
+            // If results are found, return the first record
+            $this->response['data'] = $response[0];
+            $this->response['status'] = 200;
+        }
+    
         return $this->getResponse();
     }
 

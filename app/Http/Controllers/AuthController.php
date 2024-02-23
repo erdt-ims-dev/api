@@ -17,16 +17,21 @@ use App\Models\User;
 use App\Models\AccountDetails;
 use App\Models\LoginAttempts;
 
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuthExceptions\JWTException;
 
+use Carbon\Carbon;
 
 class AuthController extends APIController
 {
+    
 
     public function register(Request $requests){
         $data = $requests->all();
         // validate input values
         $valid = RequestValidatorServiceProvider::registerValidator($data);
         if ($valid) {
+            // checks if email already exists in User table
             $response = User::where("email", '=' ,$data['email'])->get();
             if($response->isEmpty()){
                 return $this->insertNew($data);
@@ -45,20 +50,21 @@ class AuthController extends APIController
     public function insertNew($data)
     {
         try {
-            $userUuid = Str::orderedUuid();
-            $accountDetailUuid = Str::orderedUuid();
+            $userUuid = Str::uuid()->toString();
+            $accountDetailUuid = Str::uuid()->toString();
 
             $user = new User();
             $user->id = $userUuid;
             $user->email = $data['email'];
             $user->account_type = 'staff';
+            $user->session_token = null;
             $user->password = Hash::make($data['password']);
             $user->status = 'verified';
             $user->save();
 
             $accountDetails = new AccountDetails();
             $accountDetails->id = $accountDetailUuid;
-            $accountDetails->user_id = $userUuid;
+            $accountDetails->user_id = $user->id;
             $accountDetails->first_name = $data['first_name'];
             $accountDetails->middle_name = '';
             $accountDetails->profile_picture = '';
@@ -66,7 +72,7 @@ class AuthController extends APIController
             $accountDetails->save();
 
             event(new Registered($user));
-            $this->response['data'] = 'User registered';
+            $this->response['data'] = $user;
             return $this->getResponse();
         } catch (\Throwable $th) {
             $this->response['error'] = $th->getMessage();
@@ -76,12 +82,13 @@ class AuthController extends APIController
     }
     //used when manually creating an account - admin panel
     public function newUser($data){
-        $userUuid = Str::orderedUuid();
+        $userUuid = Str::uuid()->toString();
         $valid = RequestValidatorServiceProvider::registerValidator($data);
         if($valid){
             $user = new User();
             $user->id = $userUuid;
             $user->email = $data['email'];
+            $user->session_token = null;
             $user->account_type = 'Not set';
             $user->password = Hash::make($data['password']);
             $user->status = 'Not verified';
@@ -140,6 +147,7 @@ class AuthController extends APIController
             return $this->getError();
         }
     }
+
     public function logout(Request $request){
         try {
             // $data = $request->all();
@@ -181,4 +189,191 @@ class AuthController extends APIController
             return $this->getError();
         }
     }
+    // JWT Related
+
+    public function __construct(){
+        $this->middleware('auth:api', ['except' => ['authenticate', 'login', 'register']]);
+    }
+    // public function authenticate(Request $request){
+    //     // validate if account exists
+    //     $data = $request->all();
+    //     $response = User::where("email", '=' ,$data['email'])->get();
+            
+    //     if(!$response->isEmpty()){
+    //             $credentials = array("email" => $data['email'], 'password' => $data['password']);
+    //             $token = null;
+                
+    //             try {
+    //                 // Verify the credentials and create a JWT token for the user
+    //                 if (! $token = JWTAuth::attempt($credentials)) {
+    //                     // If verification fails, return an error response
+    //                     return response()->json(['error' => 'invalid_credentials'], 401);
+    //                 }
+    //             } catch (JWTException $e) {
+    //                 // If an exception occurs during JWT token creation, return an error response
+    //                 return response()->json(['error' => 'could_not_create_token'], 500);
+    //             }
+    //             // Calculate how much time has passed since last update
+    //             $lastLogin = Carbon::createFromFormat('Y-m-d H:i:s', $response[0]['updated_at']);
+    //             $currentDate = Carbon::now();
+    //             $diff = $currentDate->diffInMinutes($lastLogin);
+                
+    //             $token = compact('token');
+    //             if ($diff > 0) {
+    //                 $accountToken = json_decode($response[0]['session_token'], true);
+                    
+    //                 if ($accountToken === null) {
+    //                     // If the token exists, update it along with the timestamp
+    //                     $accountToken['token'] = $token['token'];
+    //                 } else {
+    //                     // If the token doesn't exist, create a new entry
+    //                     $accountToken = [
+    //                         'token' => $token['token'],
+    //                         'updated_at' => Carbon::now(),
+    //                     ];
+    //                 }
+                
+    //                 $updatedData = [
+    //                     'session_token' => json_encode($accountToken),
+    //                     'updated_at' => Carbon::now(),
+    //                 ];
+                
+    //                 try {
+    //                     User::where('id', '=', $response[0]['id'])->update($updatedData);
+    //                     $this->response['data'] = "Updated";
+    //                     $this->response['status'] = 401;
+    //                     return $this->getResponse();
+    //                 } catch (\Exception $e) {
+    //                     // Handle the exception
+    //                     $this->response['error'] = $e->getMessage();
+    //                     $this->response['status'] = 500;
+    //                     return $this->getResponse();
+    //                 }
+    //             }
+
+    //         }else{
+    //             $this->response['error'] = "Account Doesn't Exist";
+    //             $this->response['status'] = 401;
+    //             return $this->getResponse();   
+    //         }
+            
+    // }
+
+    // formatted by gpt
+    public function authenticate(Request $request)
+    {
+        // Validate if the account exists
+        $data = $request->all();
+        $user = User::where("email", $data['email'])->first();
+
+        if (!$user) {
+            return $this->getResponseWithError("Account doesn't exist", 401);
+        }
+
+        $credentials = ["email" => $data['email'], 'password' => $data['password']];
+        $token = null;
+
+        try {
+            // Verify the credentials and create a JWT token for the user
+            $token = JWTAuth::attempt($credentials);
+
+            if (!$token) {
+                return $this->getResponseWithError('Invalid credentials', 401);
+            }
+        } catch (JWTException $e) {
+            // If an exception occurs during JWT token creation, return an error response
+            return $this->getResponseWithError('Could not create token', 500);
+        }
+
+        // Calculate how much time has passed since last update
+        $lastLogin = Carbon::parse($user->updated_at);
+        $currentDate = Carbon::now();
+        $diff = $currentDate->diffInMinutes($lastLogin);
+        // set to 0 for testing
+        if ($diff > 0) {
+            $accountToken = json_decode($user->session_token, true) ?: [];
+            $accountToken['token'] = $token;
+            $accountToken['updated_at'] = Carbon::now();
+
+            try {
+                // Use a transaction to ensure data consistency
+                \DB::beginTransaction();
+
+                $user->update([
+                    'session_token' => json_encode($accountToken),
+                    'updated_at' => Carbon::now(),
+                ]);
+
+                \DB::commit();
+
+                return $this->getResponseWithData("Updated", 401);
+            } catch (\Exception $e) {
+                // Rollback the transaction on exception
+                \DB::rollBack();
+
+                return $this->getResponseWithError($e->getMessage(), 500);
+            }
+        }
+
+        return $this->getResponseWithData("No update needed", 200);
+    }
+
+    // Helper method for consistent error response
+    private function getResponseWithError($error, $status)
+    {
+        return response()->json(['error' => $error, 'status' => $status], $status);
+    }
+
+    // Helper method for consistent success response
+    private function getResponseWithData($data, $status)
+    {
+        return response()->json(['data' => $data, 'status' => $status], $status);
+    }
+
+
+
+    public function refresh(){
+        $current_token  = JWTAuth::getToken();
+        $token          = JWTAuth::refresh($current_token);
+        $this->response['current'] = $current_token;
+        $this->response['new'] = $token;
+        return $this->getResponse();
+    }
+
+    public function deauthenticate(){
+        JWTAuth::invalidate(JWTAuth::getToken());
+        return response()->json(['token' => NULL]);
+    }
+
+    protected function respondWithToken($token){
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60
+        ]);
+    }
+
+    public function getAuthenticatedUser(){
+      try {
+        if (! $user = JWTAuth::parseToken()->authenticate()) {
+          return response()->json(['user_not_found'], 404);
+        }
+      } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+        return response()->json(['token_expired'], $e->getStatusCode());
+      } catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+        return response()->json(['token_invalid'], $e->getStatusCode());
+      } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
+        return response()->json(['token_absent'], $e->getStatusCode());
+      }
+
+      // the token is valid and we have found the user via the sub claim
+      if($user){
+        $account = app('App\Http\Controllers\AccountDetailsController')->retrieveByParameter(array('col', '=', 'id', 'value', '=', $user->id));
+        $user['details'] = $account ? $account['data'] : null;
+      }
+      return response()->json($user);
+  }
+    // Authenticate
+
+
 }

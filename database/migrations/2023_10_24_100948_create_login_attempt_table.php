@@ -14,7 +14,7 @@ class CreateLoginAttemptTable extends Migration
     public function up()
     {
         Schema::create('login_attempts', function (Blueprint $table) {
-            $table->uuid('id')->primary()->unique();
+            $table->uuid('id')->primary();
             $table->string('account_id');
             $table->Integer('attempts');
             $table->timestamps();

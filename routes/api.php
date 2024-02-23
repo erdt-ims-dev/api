@@ -26,14 +26,23 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
+
 Route::prefix('/app/')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
-    Route::post('login', [AuthController::class, 'login']);
+    Route::post('login', [AuthController::class, 'login'])->name('app.login');
     Route::post('forgot_password', [AuthController::class, 'forgot_password']);
     
+    Route::prefix('/authenticate/')->group(function () {
+        Route::post('auth', [AuthController::class, 'authenticate']);
+        Route::post('user', [AuthController::class, 'getAuthenticatedUser']);
+        Route::post('refresh', [AuthController::class, 'refresh']);
+        Route::post('invalidate', [AuthController::class, 'deauthenticate']);
+    });
+
     Route::prefix('/comments/')->group(function () {
         Route::post('create', [CommentsController::class, 'create']);
-        Route::post('retrievebyParameter', [CommentsController::class, 'retrievebyParameter']);
+        Route::post('retrieveByParameter', [CommentsController::class, 'retrieveByParameter']);
         Route::post('retrieveAll', [CommentsController::class, 'retrieveAll']);
         Route::post('update', [CommentsController::class, 'update']);
         Route::post('delete', [CommentsController::class, 'delete']);
@@ -42,8 +51,9 @@ Route::prefix('/app/')->group(function () {
 
     Route::prefix('/user/')->group(function () {
         Route::post('retrieveAll', [UserController::class, 'retrieveAll']);
+        Route::post('retrieveByParameter', [UserController::class, 'retrieveByParameter']);
     });
-    
+    // 2-20-24 update statements are not yet done, new update method
     Route::prefix('/account_details/')->group(function () {
         Route::post('create', [AccountDetailsController::class, 'create']);
         Route::post('delete', [AccountDetailsController::class, 'delete']);
@@ -55,7 +65,7 @@ Route::prefix('/app/')->group(function () {
 
     Route::prefix('/leave_application/')->group(function () {
         Route::post('create', [LeaveApplicationController::class, 'create']);
-        Route::post('retrievebyParameter', [LeaveApplicationController::class, 'retrievebyParameter']);
+        Route::post('retrieveByParameter', [LeaveApplicationController::class, 'retrieveByParameter']);
         Route::post('retrieveAll', [LeaveApplicationController::class, 'retrieveAll']);
         Route::post('update', [LeaveApplicationController::class, 'update']);
         Route::post('delete', [LeaveApplicationController::class, 'delete']);
@@ -63,7 +73,7 @@ Route::prefix('/app/')->group(function () {
 
     Route::prefix('/admin_system_message/')->group(function () {
         Route::post('create', [AdminSystemMessageController::class, 'create']);
-        Route::post('retrievebyParameter', [AdminSystemMessageController::class, 'retrievebyParameter']);
+        Route::post('retrieveByParameter', [AdminSystemMessageController::class, 'retrieveByParameter']);
         Route::post('retrieveAll', [AdminSystemMessageController::class, 'retrieveAll']);
         Route::post('update', [AdminSystemMessageController::class, 'update']);
         Route::post('delete', [AdminSystemMessageController::class, 'delete']);
@@ -71,31 +81,23 @@ Route::prefix('/app/')->group(function () {
 
     Route::prefix('/scholar_tasks/')->group(function () {
         Route::post('create', [ScholarTasksController::class, 'create']);
-        Route::post('retrievebyParameter', [ScholarTasksController::class, 'retrievebyParameter']);
+        Route::post('retrieveByParameter', [ScholarTasksController::class, 'retrieveByParameter']);
         Route::post('retrieveAll', [ScholarTasksController::class, 'retrieveAll']);
         Route::post('update', [ScholarTasksController::class, 'update']);
         Route::post('delete', [ScholarTasksController::class, 'delete']);
     });
     Route::prefix('/scholar_portfolio/')->group(function () {
         Route::post('create', [ScholarPortfolioController::class, 'create']);
-        Route::post('retrievebyParameter', [ScholarPortfolioController::class, 'retrievebyParameter']);
+        Route::post('retrieveByParameter', [ScholarPortfolioController::class, 'retrieveByParameter']);
         Route::post('retrieveAll', [ScholarPortfolioController::class, 'retrieveAll']);
         Route::post('update', [ScholarPortfolioController::class, 'update']);
         Route::post('delete', [ScholarPortfolioController::class, 'delete']);
     });
     Route::prefix('/notification/')->group(function () {
         Route::post('create', [NotificationController::class, 'create']);
-        Route::post('retrievebyParameter', [NotificationController::class, 'retrievebyParameter']);
+        Route::post('retrieveByParameter', [NotificationController::class, 'retrieveByParameter']);
         Route::post('retrieveAll', [NotificationController::class, 'retrieveAll']);
         Route::post('update', [NotificationController::class, 'update']);
         Route::post('delete', [NotificationController::class, 'delete']);
     });
-});
-
-//testing
-Route::get('comments', function() {
-    return 'these are the comments';
-});
-Route::get('/test', function () {
-    return response()->json(['message' => 'API is accessible']);
 });

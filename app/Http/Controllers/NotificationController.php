@@ -16,7 +16,7 @@ class NotificationController extends APIController
     {
         $data = $request->all();
         $notification = new Notification();
-        $notification->id = Str::orderedUuid();
+        $notification->id = Str::uuid()->toString();
         $notification->user_id = $data['to_user'];
         $notification->notif_message = $data['message'];
         $notification->save();
@@ -27,14 +27,18 @@ class NotificationController extends APIController
     }
 
     public function retrievebyParameter(Request $request)    {
-        
-        // $comment = Item::findOrFail($id);
-        // return response()->json($comment);
-    
         $data = $request->all();
         $response = Notification::where($data['col'], '=', $data['value'])->get();
-        $this->response['data'] = $response[0];
-        $this->response['status'] = 200;
+        if ($response->isEmpty()) {
+            // If no results are found, return an appropriate response
+            $this->response['error'] = 'No matching records found.';
+            $this->response['status'] = 404;
+        } else {
+            // If results are found, return the first record
+            $this->response['data'] = $response[0];
+            $this->response['status'] = 200;
+        }
+    
         return $this->getResponse();
     }
 

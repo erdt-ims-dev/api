@@ -14,7 +14,7 @@ class CreateAdminSystemMessageTable extends Migration
     public function up()
     {
         Schema::create('admin_system_message', function (Blueprint $table) {
-            $table->uuid('id')->primary()->unique();
+            $table->uuid('id')->primary();
             $table->string('message_by');
             $table->string('system_message');
             $table->timestamps();

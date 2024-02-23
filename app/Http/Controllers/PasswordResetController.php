@@ -64,7 +64,7 @@ class PasswordResetController extends Controller
             $user = User::findOrFail($id);
             $user->notify(new PasswordResetNotification($token));
             PasswordReset::create([
-                "id" => Str::orderedUuid(),
+                "id" => Str::uuid()->toString(),
                 "user_id" => $id,
                 "token" => $signature,
                 "token_type" => 1,

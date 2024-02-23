@@ -13,6 +13,7 @@ class ScholarController extends Controller
     public function create(Request $request){
         $data = $request->all();
         $query = new Scholar();
+        $query->id = Str::uuid()->toString();
         $query->user_id = $data['user_id'];
         $query->scholar_request_id = $data['scholar_request_id'];
         $query->scholar_task_id = $data['scholar_task_id'];
@@ -40,8 +41,16 @@ class ScholarController extends Controller
     public function retrieveByParameter(Request $request){
         $data = $request->all();
         $response = Scholar::where($data['col'], '=' ,$data['value'])->get();
-        $this->response['data'] = $response[0];
-        $this->response['status'] = 200;
+        if ($response->isEmpty()) {
+            // If no results are found, return an appropriate response
+            $this->response['error'] = 'No matching records found.';
+            $this->response['status'] = 404;
+        } else {
+            // If results are found, return the first record
+            $this->response['data'] = $response[0];
+            $this->response['status'] = 200;
+        }
+    
         return $this->getResponse();
     }
     public function retrieveAll(Request $request){
