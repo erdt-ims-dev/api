@@ -14,7 +14,7 @@ class CreateScholarRequest extends Migration
     public function up()
     {
         Schema::create('scholar_request_application', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id('id');
             $table->string('scholar_id');
             $table->string('status');
             $table->string('comment_id');

@@ -12,11 +12,9 @@ class AdminSystemMessageController extends Controller
     //
     public function create(Request $request){
         
-        $Uuid = Str::uuid()->toString();
         try{
         $data = $request->all();
         $query = new AdminSystemMessage();
-        $query->id = $Uuid;
         $query->message_by = $data['message_by'];
         $query->system_message = $data['system_message'];
         $query->save();

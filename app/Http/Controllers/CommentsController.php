@@ -21,7 +21,6 @@ class CommentsController extends APIController
         //$testData = "very good job!";
         $data = $request->all();
         $comments = new Comments();
-        $comments->id = Str::uuid()->toString();
         $comments->comment_by = $data['comment_by'];
         $comments->message = $data['message'];
         $comments->save();

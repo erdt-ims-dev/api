@@ -14,7 +14,7 @@ class CreateStaffApplicantManagementTable extends Migration
     public function up()
     {
         Schema::create('staff_applicant_management', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id('id');
             $table->string('scholar_request_id');
             $table->string('endorsed_by');
             $table->timestamps();

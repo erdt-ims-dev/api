@@ -28,7 +28,7 @@ class ScholarTasksController extends APIController
         // Init
         $data = $request->all();
         $scholar = new ScholarTasks();
-        $scholar->id = $scholarUuid;
+        // $scholar->id = $scholarUuid;
         $scholar->user_id = $data['user_id']; // user_id comes from Frontend
         $s3BaseUrl = config('app.s3_base_url');
 

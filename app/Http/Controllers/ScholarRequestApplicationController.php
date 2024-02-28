@@ -24,7 +24,7 @@ class ScholarRequestApplicationController extends APIController
         // Init
         $data = $request->all();
         $application = new ScholarRequestApplication();
-        $application->id = $applicationUuid;
+        // $application->id = $applicationUuid;
 
         // main
         $application->account_details_id = $data['account_details_id'];

@@ -50,11 +50,10 @@ class AuthController extends APIController
     public function insertNew($data)
     {
         try {
-            $userUuid = Str::uuid()->toString();
-            $accountDetailUuid = Str::uuid()->toString();
+            // $userUuid = Str::uuid()->toString();
+            // $accountDetailUuid = Str::uuid()->toString();
 
             $user = new User();
-            $user->id = $userUuid;
             $user->email = $data['email'];
             $user->account_type = 'staff';
             $user->session_token = null;
@@ -63,7 +62,6 @@ class AuthController extends APIController
             $user->save();
 
             $accountDetails = new AccountDetails();
-            $accountDetails->id = $accountDetailUuid;
             $accountDetails->user_id = $user->id;
             $accountDetails->first_name = $data['first_name'];
             $accountDetails->middle_name = '';
@@ -306,7 +304,7 @@ class AuthController extends APIController
 
                 \DB::commit();
 
-                return $this->getResponseWithData("Updated", 401);
+                return $this->getResponseWithData($accountToken, 401);
             } catch (\Exception $e) {
                 // Rollback the transaction on exception
                 \DB::rollBack();

@@ -14,7 +14,7 @@ class CreateAccountDetails extends Migration
     public function up()
     {
         Schema::create('account_details', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id('id');
             $table->string('user_id');
             $table->string('first_name');
             $table->string('middle_name');

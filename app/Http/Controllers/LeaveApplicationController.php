@@ -18,7 +18,6 @@ class LeaveApplicationController extends APIController
             $LeaveUuid = Str::uuid();
 
             $leave = new LeaveApplication();
-            $leave->id = $LeaveUuid;
             $leave->user_id = $data['user_id'];
             $leave->leave_start = $data['leave_start'];
             $leave->leave_end = $data['leave_end'];

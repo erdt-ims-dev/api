@@ -31,8 +31,9 @@ class AccountDetailsController extends APIController
             $uuidString = $uuidObject->toString();
             // Create and save AccountDetails
             $details = new AccountDetails();
-            $details->id = Str::uuid()->toString();
-            $details->user_id = $uuidString;
+            // $details->id = Str::uuid()->toString();
+            // $details->user_id = $uuidString;
+            
             // AWS Calls - Return paths to file on S3 bucket
             $pfp = $request->file('profile')->storePublicly('users/'.$uuidString.'/account_files/profile/');
             $birth = $request->file('birth')->storePublicly('users/'.$uuidString.'/account_files/birth/');

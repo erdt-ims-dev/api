@@ -16,7 +16,6 @@ class NotificationController extends APIController
     {
         $data = $request->all();
         $notification = new Notification();
-        $notification->id = Str::uuid()->toString();
         $notification->user_id = $data['to_user'];
         $notification->notif_message = $data['message'];
         $notification->save();

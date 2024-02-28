@@ -14,7 +14,7 @@ class CreateScholarPortfolio extends Migration
     public function up()
     {
         Schema::create('scholar_portfolio', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id('id');
             $table->string('scholar_id');
             $table->string('study');
             $table->string('study_name');

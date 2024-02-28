@@ -14,7 +14,7 @@ class CreateUserForgotPasswordTable extends Migration
     public function up()
     {
         Schema::create('user_forgot_password', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id('id');
             $table->string('user_id');
             $table->string('token');
             $table->string('status');

@@ -19,7 +19,7 @@ class StaffApplicantManagementController extends Controller
         //$testData = "very good job!";
         $data = $request->all();
         $staffapplicant = new StaffApplicantManagement();
-        $staffapplicant->id = Str::uuid();
+        // $staffapplicant->id = Str::uuid();
         $staffapplicant->message = $data['scholar_request_id'];
         $staffapplicant->message = $data['endorsed_by'];
         $staffapplicant->save();

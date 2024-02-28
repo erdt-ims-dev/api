@@ -29,7 +29,7 @@ class ScholarPortfolioController extends APIController
             $study = $request->file('study')->storePubliclyAs('users/'.$data['user_id'].'/academic_files/portfolio/'.$study_name, $study_name.$formatted);
         }  
         // Main
-        $portfolio->id = $portfolioUuid;
+        // $portfolio->id = $portfolioUuid;
         $portfolio->user_id = $data['scholar_id'];
         $portfolio->study_name = $data['study_name'];
         $portfolio->study = "{$s3BaseUrl}{$study}";

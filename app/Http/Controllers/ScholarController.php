@@ -13,7 +13,7 @@ class ScholarController extends Controller
     public function create(Request $request){
         $data = $request->all();
         $query = new Scholar();
-        $query->id = Str::uuid()->toString();
+        // $query->id = Str::uuid()->toString();
         $query->user_id = $data['user_id'];
         $query->scholar_request_id = $data['scholar_request_id'];
         $query->scholar_task_id = $data['scholar_task_id'];
