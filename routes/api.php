@@ -11,6 +11,8 @@ use App\Http\Controllers\AdminSystemMessageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ScholarTasksController;
 use App\Http\Controllers\ScholarPortfolioController;
+use App\Http\Controllers\ScholarRequestApplicationController;
+use App\Http\Controllers\ScholarController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -78,13 +80,12 @@ Route::prefix('/app/')->group(function () {
         Route::post('update', [AdminSystemMessageController::class, 'update']);
         Route::post('delete', [AdminSystemMessageController::class, 'delete']);
     });
-
-    Route::prefix('/scholar_tasks/')->group(function () {
-        Route::post('create', [ScholarTasksController::class, 'create']);
-        Route::post('retrieveByParameter', [ScholarTasksController::class, 'retrieveByParameter']);
-        Route::post('retrieveAll', [ScholarTasksController::class, 'retrieveAll']);
-        Route::post('update', [ScholarTasksController::class, 'update']);
-        Route::post('delete', [ScholarTasksController::class, 'delete']);
+    Route::prefix('/scholar/')->group(function () {
+        Route::post('create', [ScholarController::class, 'create']);
+        Route::post('retrieveByParameter', [ScholarController::class, 'retrieveByParameter']);
+        Route::post('retrieveAll', [ScholarController::class, 'retrieveAll']);
+        Route::post('update', [ScholarController::class, 'update']);
+        Route::post('delete', [ScholarController::class, 'delete']);
     });
     Route::prefix('/scholar_portfolio/')->group(function () {
         Route::post('create', [ScholarPortfolioController::class, 'create']);
@@ -93,6 +94,22 @@ Route::prefix('/app/')->group(function () {
         Route::post('update', [ScholarPortfolioController::class, 'update']);
         Route::post('delete', [ScholarPortfolioController::class, 'delete']);
     });
+    Route::prefix('/scholar_request/')->group(function () {
+        Route::post('create', [ScholarRequestApplicationController::class, 'create']);
+        Route::post('retrieveByParameter', [ScholarRequestApplicationController::class, 'retrieveByParameter']);
+        Route::post('retrieveAll', [ScholarRequestApplicationController::class, 'retrieveAll']);
+        Route::post('update', [ScholarRequestApplicationController::class, 'update']);
+        Route::post('delete', [ScholarRequestApplicationController::class, 'delete']);
+    });
+    Route::prefix('/scholar_tasks/')->group(function () {
+        Route::post('create', [ScholarTasksController::class, 'create']);
+        Route::post('retrieveByParameter', [ScholarTasksController::class, 'retrieveByParameter']);
+        Route::post('retrieveAll', [ScholarTasksController::class, 'retrieveAll']);
+        Route::post('update', [ScholarTasksController::class, 'update']);
+        Route::post('delete', [ScholarTasksController::class, 'delete']);
+    });
+    
+    
     Route::prefix('/notification/')->group(function () {
         Route::post('create', [NotificationController::class, 'create']);
         Route::post('retrieveByParameter', [NotificationController::class, 'retrieveByParameter']);

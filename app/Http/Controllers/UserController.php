@@ -22,8 +22,13 @@ class UserController extends APIController
             $this->response['status'] = 404;
         } else {
             // If results are found, return the first record
-            $this->response['data'] = $response[0];
+            // $this->response['data'] = $response[0];
+            // $this->response['status'] = 200;
+            
+            // return all records
+            $this->response['data'] = $response;
             $this->response['status'] = 200;
+        
         }
     
         return $this->getResponse();
