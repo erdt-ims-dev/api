@@ -28,8 +28,8 @@ class ScholarRequestApplicationController extends APIController
 
         // main
         $application->account_details_id = $data['account_details_id'];
-        $application->user_id = $data['user_id'];
-        $application->status = 0;
+        $application->scholar_id = $data['scholar_id'];
+        $application->status = 'pending';
         $application->comment_id = null;
         $application->save();
         $this->response['data'] =  "created";
