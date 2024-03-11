@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Comments;
 use App\Models\StaffApplicantManagement;
+use App\Models\User;
 
 class StaffApplicantManagementController extends Controller
 {
@@ -16,32 +17,46 @@ class StaffApplicantManagementController extends Controller
 
     public function create(Request $request)
     {
-        //$testData = "very good job!";
-        $data = $request->all();
-        $staffapplicant = new StaffApplicantManagement();
-        // $staffapplicant->id = Str::uuid();
-        $staffapplicant->message = $data['scholar_request_id'];
-        $staffapplicant->message = $data['endorsed_by'];
-        $staffapplicant->save();
+        // verify authorization 
+        $user = User::where('id', $data['user_id'])->whereIn('account_type', ['admin', 'staff'])->first();
+        if (!$user) {
+            $this->response['error'] = 'Insufficient previleges';
+            $this->response['status'] = 404; // or another appropriate status code
+            return $this->getResponse();
+        }
+        try
+        {
+            $staff = new StaffApplicantManagement();
+            $staff->scholar_request_id = ScholarRequestApplication::find($data['scholar_id']);
+            $staff->endorsed_by = $user->id;
+            $staff->save();
 
-        $this->response['data'] = 'Comment added successfully';
-        return $this->getResponse();
+            $this->response['data'] = 'Endorsement added successfully';
+            $this->response['status'] = 200;
+            return $this->getResponse();
+        }
+        catch (\Throwable $th)
+        {
+            $this->response['error'] = $th->getMessage();
+            $this->response['status'] = $th->getCode();
+            return $this->getResponse();
+        }
     }
 
-    public function retrievebyParameter(Request $request)    {
+    public function retrieveOneByParameter(Request $request)    {
     
         $data = $request->all();
         $response = StaffApplicantManagement::where($data['col'], '=', $data['value'])->get();
-        if ($response->isEmpty()) {
-            // If no results are found, return an appropriate response
-            $this->response['error'] = 'No matching records found.';
-            $this->response['status'] = 404;
-        } else {
-            // If results are found, return the first record
-            $this->response['data'] = $response[0];
-            $this->response['status'] = 200;
-        }
+        $this->response['data'] = $response[0];
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
+    public function retrieveMultipleByParameter(Request $request)    {
     
+        $data = $request->all();
+        $response = StaffApplicantManagement::where($data['col'], '=', $data['value'])->get();
+        $this->response['data'] = $response;
+        $this->response['status'] = 200;
         return $this->getResponse();
     }
 
