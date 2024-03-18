@@ -294,7 +294,6 @@ class AccountDetailsController extends APIController
     }
     public function retrieveMultipleByParameter(Request $request)    {
 
-    
         $data = $request->all();
         $response = AccountDetails::where($data['col'], '=', $data['value'])->get();
         $this->response['data'] = $response;

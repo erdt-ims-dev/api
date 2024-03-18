@@ -29,4 +29,17 @@ class UserController extends APIController
         $this->response['status'] = 200;
         return $this->getResponse();
     }
+    public function update(Request $request) {
+        $data = $request->all();
+        $query = User::find($data['id']);
+        if (!$query) {
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        if ($query) {
+            $query->{$data['col']} = $data['value'];
+            $query->save();
+        }
+    }
 }
