@@ -58,11 +58,20 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveMultiple', [UserController::class, 'retrieveMultipleByParameter']);
     });
     // 2-20-24 update statements are not yet done, new update method
+    // 3-19-24 update statements updated
     Route::prefix('/account_details/')->group(function () {
         Route::post('create', [AccountDetailsController::class, 'create']);
         Route::post('delete', [AccountDetailsController::class, 'delete']);
-        Route::post('update', [AccountDetailsController::class, 'update']);
-        // Route::patch('patch/{id}', [AccountDetailsController::class, 'patch']);
+        
+        Route::post('updateProfile', [AccountDetailsController::class, 'updateProfile']);
+        Route::post('updateBirth', [AccountDetailsController::class, 'updateBirth']);
+        Route::post('updateTor', [AccountDetailsController::class, 'updateTor']);
+        Route::post('updateEssay', [AccountDetailsController::class, 'updateEssay']);
+        Route::post('updateRecommendation', [AccountDetailsController::class, 'updateRecommendation']);
+        Route::post('updateMedical', [AccountDetailsController::class, 'updateMedical']);
+        Route::post('updateNBI', [AccountDetailsController::class, 'updateNBI']);
+        Route::post('updateNotice', [AccountDetailsController::class, 'updateNotice']);
+
         Route::post('retrieveOne', [AccountDetailsController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultiple', [AccountDetailsController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [AccountDetailsController::class, 'retrieveAll']);
