@@ -86,30 +86,31 @@ class AccountDetailsController extends APIController
         }
 
     }
-    public function updateProfile(Request $request){
-        $data = $request->all();
-        $query = AccountDetails::find($data['id']);
-        if(!$query){
-            $this->response['error'] = "Account Not Found";
-            $this->response['status'] = 401;
-            return $this->getError();
+    
+    // use user id? or use id itself when finding what to update?
+    // gonna add both methods
+    public function updateByParameter(Request $request) {
+        $data = $request->validate([
+            'user_id' => 'required|integer',
+            'file' => 'required|file',
+            'field' => 'required|string',
+        ]);
+    
+        $query = AccountDetails::find($data['user_id']);
+        if (!$query) {
+            throw new Exception("Account Not Found", 401);
         }
-        if($query){
-            // AWS
-            if($request->hasFile('profile')){
-                $file = $request->file('profile')->storePublicly('users/'.$data['user_id'].'/account_files/profile/');
-                $query->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
-                $query->save();
-                $this->response['data'] =  "Submitted";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 200;
-            }else{
-                $this->response['data'] =  "Failed";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 402;
-            }
+    
+        if ($request->hasFile($data['file'])) {
+            $file = $request->file($data['file'])->storePublicly('users/' . $data['user_id'] . '/account_files/' . $data['field'] . '/');
+            $query->{$data['field']} = "https://erdt.s3.us-east-1.amazonaws.com/$file";
+            $query->save();
+            return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
+        } else {
+            throw new Exception("Failed", 402);
         }
     }
+    
     public function updateProgram(Request $request){
         $data = $request->all();
         $query = AccountDetails::find($data['id']);

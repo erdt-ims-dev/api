@@ -63,6 +63,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('create', [AccountDetailsController::class, 'create']);
         Route::post('delete', [AccountDetailsController::class, 'delete']);
         
+        Route::post('update', [AccountDetailsController::class, 'updateByParameter']);
         Route::post('updateProfile', [AccountDetailsController::class, 'updateProfile']);
         Route::post('updateProgram', [AccountDetailsController::class, 'updateProgram']);
         Route::post('updateBirth', [AccountDetailsController::class, 'updateBirth']);
