@@ -58,12 +58,13 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveMultiple', [UserController::class, 'retrieveMultipleByParameter']);
     });
     // 2-20-24 update statements are not yet done, new update method
-    // 3-19-24 update statements updated
+    // 3-19-24 update statements routed
     Route::prefix('/account_details/')->group(function () {
         Route::post('create', [AccountDetailsController::class, 'create']);
         Route::post('delete', [AccountDetailsController::class, 'delete']);
         
         Route::post('updateProfile', [AccountDetailsController::class, 'updateProfile']);
+        Route::post('updateProgram', [AccountDetailsController::class, 'updateProgram']);
         Route::post('updateBirth', [AccountDetailsController::class, 'updateBirth']);
         Route::post('updateTor', [AccountDetailsController::class, 'updateTor']);
         Route::post('updateEssay', [AccountDetailsController::class, 'updateEssay']);

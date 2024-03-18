@@ -110,6 +110,29 @@ class AccountDetailsController extends APIController
             }
         }
     }
+    public function updateProgram(Request $request){
+        $data = $request->all();
+        $query = AccountDetails::find($data['id']);
+        if(!$query){
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        if($query){
+            // AWS
+            if($request->hasFile('program')){
+                $file = $request->file('program')->storePublicly('users/'.$data['user_id'].'/account_files/birth/');
+                $query->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
+                $this->response['data'] =  "Submitted";
+                $this->response['details'] =  $query;
+                $this->response['status'] = 200;
+            }else{
+                $this->response['data'] =  "failed";
+                $this->response['details'] =  $query;
+                $this->response['status'] = 402;
+            }
+        }
+    }
     public function updateBirth(Request $request){
         $data = $request->all();
         $query = AccountDetails::find($data['id']);
