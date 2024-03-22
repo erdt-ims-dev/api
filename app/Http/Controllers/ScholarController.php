@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 use App\Models\Scholar;
 
-class ScholarController extends Controller
+class ScholarController extends APIController
 {
     //
     public function create(Request $request){

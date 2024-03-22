@@ -97,8 +97,10 @@ class AccountDetailsController extends APIController
         ]);
     
         $query = AccountDetails::find($data['user_id']);
-        if (!$query) {
-            throw new Exception("Account Not Found", 401);
+        if(!$query){
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
         }
     
         if ($request->hasFile($data['file'])) {
@@ -107,7 +109,9 @@ class AccountDetailsController extends APIController
             $query->save();
             return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
         } else {
-            throw new Exception("Failed", 402);
+            $this->response['error'] = "Upload Failed";
+            $this->response['status'] = 401;
+            return $this->getError();
         }
     }
     
