@@ -55,7 +55,7 @@ class AuthController extends APIController
 
             $user = new User();
             $user->email = $data['email'];
-            $user->account_type = 'staff';
+            $user->account_type = 'new';
             $user->session_token = null;
             $user->password = Hash::make($data['password']);
             $user->status = 'verified';
@@ -89,7 +89,7 @@ class AuthController extends APIController
             $user->session_token = null;
             $user->account_type = 'Not set';
             $user->password = Hash::make($data['password']);
-            $user->status = 'Not verified';
+            $user->status = 'active';
             $user->save();
             return $userUuid;
         }
