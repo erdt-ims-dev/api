@@ -8,7 +8,7 @@ use App\Models\User;
 class UserController extends APIController
 {
     public function retrieveAll(){
-        $response = User::all();
+        $response = User::withTrashed()->get();;
         $this->response['data'] = $response;
         $this->response['status'] = 200;
         return $this->getResponse();
@@ -58,8 +58,9 @@ class UserController extends APIController
             return $this->getError();
         }
         if($query){
-            $query->delete();
             $query->status = 'deactivated';
+            $query->save();
+            $query->delete();
             $this->response['data'] = true;
             $this->response['status'] = 200;
             return $this->getResponse();
