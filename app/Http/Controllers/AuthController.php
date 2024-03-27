@@ -62,7 +62,7 @@ class AuthController extends APIController
             $user->save();
 
             $accountDetails = new AccountDetails();
-            $accountDetails->user_id = $user->id;
+           // $accountDetails->user_id = $user->id;
             $accountDetails->first_name = $data['first_name'];
             $accountDetails->middle_name = '';
             $accountDetails->profile_picture = '';

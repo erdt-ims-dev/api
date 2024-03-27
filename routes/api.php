@@ -64,14 +64,14 @@ Route::prefix('/app/')->group(function () {
         Route::post('update', [AccountDetailsController::class, 'update']);
         // Route::patch('patch/{id}', [AccountDetailsController::class, 'patch']);
         Route::post('retrieveOne', [AccountDetailsController::class, 'retrieveOneByParameter']);
-        Route::post('retrieveMultiple', [AccountDetailsController::class, 'retrieveMultipleByParameter']);
+        Route::post('retrieveMultipleByParameter', [AccountDetailsController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [AccountDetailsController::class, 'retrieveAll']);
     });
 
     Route::prefix('/leave_application/')->group(function () {
         Route::post('create', [LeaveApplicationController::class, 'create']);
         Route::post('retrieveOne', [LeaveApplicationController::class, 'retrieveOneByParameter']);
-        Route::post('retrieveMultiple', [LeaveApplicationController::class, 'retrieveMultipleByParameter']);
+        Route::post('retrieveMultipleByParameter', [LeaveApplicationController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [LeaveApplicationController::class, 'retrieveAll']);
         Route::post('update', [LeaveApplicationController::class, 'update']);
         Route::post('delete', [LeaveApplicationController::class, 'delete']);
@@ -80,7 +80,7 @@ Route::prefix('/app/')->group(function () {
     Route::prefix('/admin_system_message/')->group(function () {
         Route::post('create', [AdminSystemMessageController::class, 'create']);
         Route::post('retrieveOne', [AdminSystemMessageController::class, 'retrieveOneByParameter']);
-        Route::post('retrieveMultiple', [AdminSystemMessageController::class, 'retrieveMultipleByParameter']);
+        Route::post('retrieveMultipleByParameter', [AdminSystemMessageController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [AdminSystemMessageController::class, 'retrieveAll']);
         Route::post('update', [AdminSystemMessageController::class, 'update']);
         Route::post('delete', [AdminSystemMessageController::class, 'delete']);
@@ -88,15 +88,15 @@ Route::prefix('/app/')->group(function () {
     Route::prefix('/scholar/')->group(function () {
         Route::post('create', [ScholarController::class, 'create']);
         Route::post('retrieveOne', [ScholarController::class, 'retrieveOneByParameter']);
-        Route::post('retrieveMultiple', [ScholarController::class, 'retrieveMultipleByParameter']);
+        Route::post('retrieveMultipleByParameter', [ScholarController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [ScholarController::class, 'retrieveAll']);
         Route::post('update', [ScholarController::class, 'update']);
         Route::post('delete', [ScholarController::class, 'delete']);
     });
     Route::prefix('/scholar_portfolio/')->group(function () {
         Route::post('create', [ScholarPortfolioController::class, 'create']);
-        Route::post('retrieveOne', [ScholarPortfolioController::class, 'retrieveOneByParameter']);
-        Route::post('retrieveMultiple', [ScholarPortfolioController::class, 'retrieveMultipleByParameter']);
+        Route::post('retrieveOneByParameter', [ScholarPortfolioController::class, 'retrieveOneByParameter']);
+        Route::post('retrieveMultipleByParameter', [ScholarPortfolioController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [ScholarPortfolioController::class, 'retrieveAll']);
         Route::post('update', [ScholarPortfolioController::class, 'update']);
         Route::post('delete', [ScholarPortfolioController::class, 'delete']);
@@ -104,7 +104,7 @@ Route::prefix('/app/')->group(function () {
     Route::prefix('/scholar_request/')->group(function () {
         Route::post('create', [ScholarRequestApplicationController::class, 'create']);
         Route::post('retrieveOne', [ScholarRequestApplicationController::class, 'retrieveOneByParameter']);
-        Route::post('retrieveMultiple', [ScholarRequestApplicationController::class, 'retrieveMultipleByParameter']);
+        Route::post('retrieveMultipleByParameter', [ScholarRequestApplicationController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [ScholarRequestApplicationController::class, 'retrieveAll']);
         Route::post('update', [ScholarRequestApplicationController::class, 'update']);
         Route::post('delete', [ScholarRequestApplicationController::class, 'delete']);
@@ -112,7 +112,7 @@ Route::prefix('/app/')->group(function () {
     Route::prefix('/scholar_tasks/')->group(function () {
         Route::post('create', [ScholarTasksController::class, 'create']);
         Route::post('retrieveOne', [ScholarTasksController::class, 'retrieveOneByParameter']);
-        Route::post('retrieveMultiple', [ScholarTasksController::class, 'retrieveMultipleByParameter']);
+        Route::post('retrieveMultipleByParameter', [ScholarTasksController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [ScholarTasksController::class, 'retrieveAll']);
         Route::post('update', [ScholarTasksController::class, 'update']);
         Route::post('delete', [ScholarTasksController::class, 'delete']);

@@ -62,7 +62,7 @@ class ScholarRequestApplicationController extends APIController
     public function retrieveOneByParameter(Request $request)    {
     
         $data = $request->all();
-        $response = ScholarRequest::where($data['col'], '=', $data['value'])->get();
+        $response = ScholarRequestApplication::where($data['col'], '=', $data['value'])->get();
         $this->response['data'] = $response[0];
         $this->response['status'] = 200;
         return $this->getResponse();
@@ -70,7 +70,7 @@ class ScholarRequestApplicationController extends APIController
     public function retrieveMultipleByParameter(Request $request)    {
     
         $data = $request->all();
-        $response = ScholarRequest::where($data['col'], '=', $data['value'])->get();
+        $response = ScholarRequestApplication::where($data['col'], '=', $data['value'])->get();
         $this->response['data'] = $response;
         $this->response['status'] = 200;
         return $this->getResponse();
