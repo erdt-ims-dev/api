@@ -42,7 +42,7 @@ class AdminSystemMessageController extends Controller
 
     }
     public function retrieveAll(Request $request){
-        $response = AdminSystemMessage::all();
+        $response = AdminSystemMessage::withTrashed()->get();
         $this->response['data'] = $response;
         $this->response['status'] = 200;
         return $this->getResponse();

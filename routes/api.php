@@ -57,6 +57,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveOne', [UserController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultiple', [UserController::class, 'retrieveMultipleByParameter']);
         Route::post('delete', [UserController::class, 'delete']);
+        Route::post('update', [UserController::class, 'update']);
     });
     // 2-20-24 update statements are not yet done, new update method
     // 3-19-24 update statements routed

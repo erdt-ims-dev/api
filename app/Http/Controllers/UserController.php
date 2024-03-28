@@ -46,6 +46,9 @@ class UserController extends APIController
         if ($query) {
             $query->{$data['col']} = $data['value'];
             $query->save();
+            $this->response['data'] = $query;
+            $this->response['status'] = 200;
+            return $this->getResponse();
         }
     }
     public function delete(Request $request) {
