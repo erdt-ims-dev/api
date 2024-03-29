@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 use App\Models\AdminSystemMessage;
 
-class AdminSystemMessageController extends Controller
+class AdminSystemMessageController extends APIController
 {
     //
     public function create(Request $request){
