@@ -91,13 +91,13 @@ class ScholarRequestApplicationController extends APIController
             return $this->getError();
         }
         if($query){
-        $query->user_id = $data['user_id'];
-        $query->status = $data['status'];
-        $query->comment_id = $data['comment_id'];
-        $query->save();
-        $this->response['data'] =  "created";
-        $this->response['details'] =  $query;
-        $this->response['status'] = 200;
+            $query->user_id = $data['user_id'];
+            $query->status = $data['status'];
+            $query->comment_id = $data['comment_id'];
+            $query->save();
+            $this->response['data'] =  "created";
+            $this->response['details'] =  $query;
+            $this->response['status'] = 200;
         }
     }
     

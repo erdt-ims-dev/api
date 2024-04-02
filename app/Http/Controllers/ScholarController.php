@@ -36,7 +36,6 @@ class ScholarController extends APIController
             $this->response['status'] = 200;
             return $this->getResponse();
         }
-
     }
     public function retrieveOneByParameter(Request $request)    {
     

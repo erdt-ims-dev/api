@@ -66,6 +66,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('delete', [AccountDetailsController::class, 'delete']);
         
         Route::post('update', [AccountDetailsController::class, 'updateByParameter']);
+        Route::post('updateDetails', [AccountDetailsController::class, 'updateDetails']);
         Route::post('updateProfile', [AccountDetailsController::class, 'updateProfile']);
         Route::post('updateProgram', [AccountDetailsController::class, 'updateProgram']);
         Route::post('updateBirth', [AccountDetailsController::class, 'updateBirth']);
@@ -100,7 +101,7 @@ Route::prefix('/app/')->group(function () {
     });
     Route::prefix('/scholar/')->group(function () {
         Route::post('create', [ScholarController::class, 'create']);
-        Route::post('retrieveOne', [ScholarController::class, 'retrieveOneByParameter']);
+        Route::post('retrieveOneByParameter', [ScholarController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultipleByParameter', [ScholarController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [ScholarController::class, 'retrieveAll']);
         Route::post('update', [ScholarController::class, 'update']);

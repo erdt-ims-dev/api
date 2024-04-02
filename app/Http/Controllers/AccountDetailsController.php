@@ -86,7 +86,25 @@ class AccountDetailsController extends APIController
         }
 
     }
-    
+    public function updateDetails(Request $request){
+        $data = $request->all();
+        $query = AccountDetails::find($data['id']);
+        if(!$query){
+            $this->response['error'] = "Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        if($query){
+            $query->first_name = $data['first_name'];
+            $query->middle_name = $data['middle_name'];
+            $query->last_name = $data['last_name'];
+            $query->program = $data['program'];
+            $query->save();
+            $this->response['data'] =  "created";
+            $this->response['details'] =  $query;
+            $this->response['status'] = 200;
+        }
+    }
     // use user id? or use id itself when finding what to update?
     // gonna add both methods
     public function updateByParameter(Request $request) {
@@ -108,7 +126,8 @@ class AccountDetailsController extends APIController
             $query->{$data['field']} = "https://erdt.s3.us-east-1.amazonaws.com/$file";
             $query->save();
             return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
-        } else {
+        } 
+        else {
             $this->response['error'] = "Upload Failed";
             $this->response['status'] = 401;
             return $this->getError();
