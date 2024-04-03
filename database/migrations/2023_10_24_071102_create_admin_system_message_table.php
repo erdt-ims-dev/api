@@ -16,7 +16,9 @@ class CreateAdminSystemMessageTable extends Migration
         Schema::create('admin_system_message', function (Blueprint $table) {
             $table->id('id');
             $table->string('message_by');
-            $table->string('system_message');
+            $table->string('message_title');
+            $table->string('message_body');
+            $table->string('status');
             $table->timestamps();
             $table->SoftDeletes();
         });

@@ -16,7 +16,9 @@ class AdminSystemMessageController extends APIController
         $data = $request->all();
         $query = new AdminSystemMessage();
         $query->message_by = $data['message_by'];
-        $query->system_message = $data['system_message'];
+        $query->message_title = $data['message_title'];
+        $query->message_body = $data['message_body'];
+        $query->status = "active";
         $query->save();
         }catch (\Throwable $th){
             $message = $th->getMessage();
@@ -24,6 +26,9 @@ class AdminSystemMessageController extends APIController
             $this->response['status'] = $th->getCode();
             return $this->getResponse();
         }
+        $this->response['data'] = 'Message Created';
+        $this->response['details'] = $query;
+        return $this->getResponse();
     }
     public function delete(Request $request){
         $data = $request->all();
