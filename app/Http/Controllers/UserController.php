@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\AccountDetails;
 
 class UserController extends APIController
 {
@@ -32,6 +33,15 @@ class UserController extends APIController
         $data = $request->all();
         $response = User::where($data['col'], '=', $data['value'])->get();
         $this->response['data'] = $response;
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
+    public function retrieveWithAccountDetailsWithEmail(Request $request)    {
+        // receives email, searches User table for id, uses id to search AccountDetails table
+        $data = $request->all();
+        $response = User::where("email", '=', $data['email'])->get()->first();
+        $details = AccountDetails::where("user_id", '=', $response->id)->get()->first();
+        $this->response['data'] = $details;
         $this->response['status'] = 200;
         return $this->getResponse();
     }

@@ -62,7 +62,7 @@ class AuthController extends APIController
             $user->save();
 
             $accountDetails = new AccountDetails();
-           // $accountDetails->user_id = $user->id;
+           $accountDetails->user_id = $user->id;
             $accountDetails->first_name = $data['first_name'];
             $accountDetails->middle_name = '';
             $accountDetails->profile_picture = '';
@@ -87,7 +87,7 @@ class AuthController extends APIController
             $user->id = $userUuid;
             $user->email = $data['email'];
             $user->session_token = null;
-            $user->account_type = 'Not set';
+            $user->account_type = 'new';
             $user->password = Hash::make($data['password']);
             $user->status = 'active';
             $user->save();
