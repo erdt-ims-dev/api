@@ -36,6 +36,14 @@ class UserController extends APIController
         $this->response['status'] = 200;
         return $this->getResponse();
     }
+    public function retrieveMultipleByFilter(Request $request)    {
+    
+        $data = $request->all();
+        $response = User::where($data['col'], '!=', $data['value'])->get();
+        $this->response['data'] = $response;
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
     public function retrieveWithAccountDetailsWithEmail(Request $request)    {
         // receives email, searches User table for id, uses id to search AccountDetails table
         $data = $request->all();

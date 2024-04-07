@@ -57,6 +57,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveOne', [UserController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultiple', [UserController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveWithAccountDetails', [UserController::class, 'retrieveWithAccountDetailsWithEmail']);
+        Route::post('retrieveFilter', [UserController::class, 'retrieveMultipleByFilter']);
 
         Route::post('delete', [UserController::class, 'delete']);
         Route::post('update', [UserController::class, 'update']);

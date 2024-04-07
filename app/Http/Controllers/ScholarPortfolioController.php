@@ -32,7 +32,8 @@ class ScholarPortfolioController extends APIController
         // $portfolio->id = $portfolioUuid;
         $portfolio->user_id = $data['scholar_id'];
         $portfolio->study_name = $data['study_name'];
-        $portfolio->study = "{$s3BaseUrl}{$study}";
+        //$portfolio->study = "{$s3BaseUrl}{$study}"; 
+        $portfolio->study = $data['study']; //<- remove this once on files
         $portfolio->study_category = $data['study_category']; // "case study", "journal",
         $portfolio->publish_type = $data['publish_type']; // "local", "international"
         $portfolio->save();
