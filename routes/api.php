@@ -124,6 +124,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveMultipleByParameter', [ScholarRequestApplicationController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [ScholarRequestApplicationController::class, 'retrieveAll']);
         Route::post('update', [ScholarRequestApplicationController::class, 'update']);
+        Route::post('updateByParameter', [ScholarRequestApplicationController::class, 'updateByParameter']);
         Route::post('delete', [ScholarRequestApplicationController::class, 'delete']);
     });
     Route::prefix('/scholar_tasks/')->group(function () {
