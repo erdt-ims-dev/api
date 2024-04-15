@@ -124,7 +124,9 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveOne', [ScholarRequestApplicationController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultipleByParameter', [ScholarRequestApplicationController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [ScholarRequestApplicationController::class, 'retrieveAll']);
-        Route::post('retrieveTableAndDetail', [ScholarRequestApplicationController::class, 'retrieveTableAndDetail']);
+        Route::post('retrievePendingTableAndDetail', [ScholarRequestApplicationController::class, 'retrievePendingTableAndDetail']);
+        Route::post('retrieveEndorsedTableAndDetail', [ScholarRequestApplicationController::class, 'retrieveEndorsedTableAndDetail']);
+
         Route::post('update', [ScholarRequestApplicationController::class, 'update']);
         Route::post('updateToEndorsed', [ScholarRequestApplicationController::class, 'updateToEndorsed']);
         Route::post('delete', [ScholarRequestApplicationController::class, 'delete']);

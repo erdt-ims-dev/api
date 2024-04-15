@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use App\Models\ScholarRequestApplication;
 use App\Models\AccountDetails;
 use App\Models\User;
+use App\Models\Scholar;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -120,10 +121,53 @@ class ScholarRequestApplicationController extends APIController
         $this->response['status'] = 200;
         return $this->getResponse();
     }
-    public function retrieveTableAndDetail(Request $request)    {
+    public function approveApplicant(Request $request) {
+        $data = $request->validate([
+            'id' => 'required|integer',
+        ]);
     
+        $query = ScholarRequestApplication::find($data['id']);
+        if(!$query){
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        $query->status = 'approved';
+        $query->save();
+        
+        $res = new Scholar();
+        $res->user_id = 
+        $this->response['data'] =  $query;
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
+    public function retrievePendingTableAndDetail(Request $request)    {
+        // where status = pending
         $data = $request->all();
         $response = ScholarRequestApplication::where('status', '=', 'pending')->get();
+
+        $query = [];
+
+        foreach ($response as $item) {
+            $accountDetail = AccountDetails::find($item->account_details_id);
+
+            if ($accountDetail) {
+                $query[] = [
+                    'list' => $item,
+                    'details' => $accountDetail
+                ];
+            }
+        }
+
+        $this->response['data'] = $query;
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
+
+    public function retrieveEndorsedTableAndDetail(Request $request)    {
+        // where status = endorsed
+        $data = $request->all();
+        $response = ScholarRequestApplication::where('status', '=', 'endorsed')->get();
 
         $query = [];
 
