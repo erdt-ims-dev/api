@@ -44,6 +44,7 @@ Route::prefix('/app/')->group(function () {
 
     Route::prefix('/comments/')->group(function () {
         Route::post('create', [CommentsController::class, 'create']);
+        Route::post('createViaApplication', [CommentsController::class, 'createViaApplication']);
         Route::post('retrieveOne', [CommentsController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultiple', [CommentsController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [CommentsController::class, 'retrieveAll']);
@@ -123,8 +124,9 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveOne', [ScholarRequestApplicationController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultipleByParameter', [ScholarRequestApplicationController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [ScholarRequestApplicationController::class, 'retrieveAll']);
+        Route::post('retrieveTableAndDetail', [ScholarRequestApplicationController::class, 'retrieveTableAndDetail']);
         Route::post('update', [ScholarRequestApplicationController::class, 'update']);
-        Route::post('updateByParameter', [ScholarRequestApplicationController::class, 'updateByParameter']);
+        Route::post('updateToEndorsed', [ScholarRequestApplicationController::class, 'updateToEndorsed']);
         Route::post('delete', [ScholarRequestApplicationController::class, 'delete']);
     });
     Route::prefix('/scholar_tasks/')->group(function () {

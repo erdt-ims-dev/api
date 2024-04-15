@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Str;
 
 use App\Models\ScholarRequestApplication;
+use App\Models\AccountDetails;
 use App\Models\User;
 
 use Illuminate\Http\Request;
@@ -84,7 +85,7 @@ class ScholarRequestApplicationController extends APIController
 
     public function update(Request $request){
         $data = $request->all();
-        $query = ScholarTasks::find($data['id']);
+        $query = ScholarRequestApplication::find($data['id']);
         if(!$query){
             $this->response['error'] = "Not Found";
             $this->response['status'] = 401;
@@ -98,7 +99,48 @@ class ScholarRequestApplicationController extends APIController
             $this->response['data'] =  "created";
             $this->response['details'] =  $query;
             $this->response['status'] = 200;
+            return $this->getResponse();
         }
     }
+    // Custom methods
+    public function updateToEndorsed(Request $request) {
+        $data = $request->validate([
+            'id' => 'required|integer',
+        ]);
     
+        $query = ScholarRequestApplication::find($data['id']);
+        if(!$query){
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        $query->status = 'endorsed';
+        $query->save();
+        $this->response['data'] =  $query;
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
+    public function retrieveTableAndDetail(Request $request)    {
+    
+        $data = $request->all();
+        $response = ScholarRequestApplication::where('status', '=', 'pending')->get();
+
+        $query = [];
+
+        foreach ($response as $item) {
+            $accountDetail = AccountDetails::find($item->account_details_id);
+
+            if ($accountDetail) {
+                $query[] = [
+                    'list' => $item,
+                    'details' => $accountDetail
+                ];
+            }
+        }
+
+        $this->response['data'] = $query;
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
+
 }

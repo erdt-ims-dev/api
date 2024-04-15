@@ -7,20 +7,44 @@ use Illuminate\Http\Request;
 
 use App\Models\Comments;
 use App\Models\AccountDetails;
+use App\Models\ScholarRequestApplication;
 
 class CommentsController extends APIController
 {
 
     public function create(Request $request)
     {
-        //$testData = "very good job!";
         $data = $request->all();
         $comments = new Comments();
         $comments->comment_by = $data['comment_by'];
         $comments->message = $data['message'];
         $comments->save();
 
-        $this->response['data'] = 'Comment added successfully';
+        $this->response['data'] = $comments;
+        return $this->getResponse();
+    }
+    // Create comments in Applications tab
+
+    public function createViaApplication(Request $request)
+    {
+        $data = $request->all();
+        $query = ScholarRequestApplication::where('account_details_id', '=', $data['id'])->first();
+        if(!$query){
+            $this->response['error'] = "ID Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        // Create new comment in CommentTable
+        $comments = new Comments();
+        $comments->comment_by = $data['comment_by'];
+        $comments->message = $data['message'];
+        $comments->save();
+
+        // Link created entry to Scholar Request Application Table
+        $query->comment_id = $comments->id;
+        $query->save();
+        $this->response['comments'] = $comments;
+        $this->response['scholar_req'] = $query;
         return $this->getResponse();
     }
 
