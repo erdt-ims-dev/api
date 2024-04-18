@@ -121,13 +121,12 @@ class AccountDetailsController extends APIController
             return $this->getError();
         }
     
-        if ($request->hasFile($data['file'])) {
-            $file = $request->file($data['file'])->storePublicly('users/' . $data['user_id'] . '/account_files/' . $data['field'] . '/');
+        if ($request->hasFile('file')) {
+            $file = $request->file('file')->storePublicly('users/' . $data['user_id'] . '/account_files/' . $data['field']);
             $query->{$data['field']} = "https://erdt.s3.us-east-1.amazonaws.com/$file";
             $query->save();
             return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
-        } 
-        else {
+        } else {
             $this->response['error'] = "Upload Failed";
             $this->response['status'] = 401;
             return $this->getError();
