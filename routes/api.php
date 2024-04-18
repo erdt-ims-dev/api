@@ -59,7 +59,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveMultiple', [UserController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveWithAccountDetails', [UserController::class, 'retrieveWithAccountDetailsWithEmail']);
         Route::post('retrieveFilter', [UserController::class, 'retrieveMultipleByFilter']);
-
+        Route::post('retrieveStatistics', [UserController::class, 'retrieveStatistics']);
         Route::post('delete', [UserController::class, 'delete']);
         Route::post('update', [UserController::class, 'update']);
     });
@@ -126,6 +126,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveAll', [ScholarRequestApplicationController::class, 'retrieveAll']);
         Route::post('retrievePendingTableAndDetail', [ScholarRequestApplicationController::class, 'retrievePendingTableAndDetail']);
         Route::post('retrieveEndorsedTableAndDetail', [ScholarRequestApplicationController::class, 'retrieveEndorsedTableAndDetail']);
+        Route::post('approveApplicant', [ScholarRequestApplicationController::class, 'approveApplicant']);
 
         Route::post('update', [ScholarRequestApplicationController::class, 'update']);
         Route::post('updateToEndorsed', [ScholarRequestApplicationController::class, 'updateToEndorsed']);

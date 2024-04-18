@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\AccountDetails;
-
+use App\Models\ScholarRequestApplication;
 class UserController extends APIController
 {
     public function retrieveAll(){
@@ -86,5 +86,29 @@ class UserController extends APIController
             $this->response['status'] = 200;
             return $this->getResponse();
         }
+    }
+    // statistics
+
+    public function retrieveStatistics(Request $request)    {
+    
+        $data = $request->all();
+        $applicant_count = User::where('account_type', '=', 'applicant')->get()->count();
+        $scholar_count = User::where('account_type', '=', 'scholar')->get()->count();
+        $pending_count = ScholarRequestApplication::where('status', '=', 'pending')->get()->count();
+        $endorsed_count = ScholarRequestApplication::where('status', '=', 'endorsed')->get()->count();
+        $total_applications = ScholarRequestApplication::count();
+        $total_approved = ScholarRequestApplication::where('status', '=', 'approved')->get()->count();
+        
+        $statistics = [
+            'applicant_count' => $applicant_count,
+            'pending_count' => $pending_count,
+            'endorsed_count' => $endorsed_count,
+            'scholar_count' => $scholar_count,
+            'total_applications' => $total_applications,
+            'total_approved' => $total_approved,
+        ];
+        $this->response['data'] = $statistics;
+        $this->response['status'] = 200;
+        return $this->getResponse();
     }
 }

@@ -30,7 +30,7 @@ class ScholarRequestApplicationController extends APIController
 
         // main
         $application->account_details_id = $data['account_details_id'];
-        $application->scholar_id = $data['scholar_id'];
+        $application->scholar_id = null;
         $application->status = 'pending';
         $application->comment_id = null;
         $application->save();
@@ -123,6 +123,7 @@ class ScholarRequestApplicationController extends APIController
     }
     public function approveApplicant(Request $request) {
         $data = $request->validate([
+            // takes id for table
             'id' => 'required|integer',
         ]);
     
@@ -132,14 +133,33 @@ class ScholarRequestApplicationController extends APIController
             $this->response['status'] = 401;
             return $this->getError();
         }
-        $query->status = 'approved';
-        $query->save();
+        if($query->status == 'endorsed'){
+            $query->status = 'approved';
+            $query->save();
+        }else{
+            $this->response['error'] = "Applicant is not endorsed";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
         
-        $res = new Scholar();
-        $res->user_id = 
-        $this->response['data'] =  $query;
-        $this->response['status'] = 200;
-        return $this->getResponse();
+        // find user using account details table
+        $details = AccountDetails::where('id', '=', $query->account_details_id)->first();
+        // create new scholar entry
+        if ($details) {
+            $res = new Scholar();
+            $res->user_id = $details->user_id;
+            $res->save();
+            $query->scholar_id = $res->id;
+            $query->save();
+            $this->response['data'] =  $query;
+            $this->response['status'] = 200;
+            return $this->getResponse();
+        } else {
+            $this->response['error'] = "Account Details Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        
     }
     public function retrievePendingTableAndDetail(Request $request)    {
         // where status = pending
