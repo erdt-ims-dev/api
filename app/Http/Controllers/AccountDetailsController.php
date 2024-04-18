@@ -107,32 +107,60 @@ class AccountDetailsController extends APIController
     }
     // use user id? or use id itself when finding what to update?
     // gonna add both methods
+    
+    // This is for single uploads, kinda inefficient
+    // public function updateByParameter(Request $request) {
+    //     $data = $request->validate([
+    //         'user_id' => 'required|integer',
+    //         'file' => 'required|file',
+    //         'field' => 'required|string',
+    //     ]);
+    
+    //     $query = AccountDetails::find($data['user_id']);
+    //     if(!$query){
+    //         $this->response['error'] = "Account Not Found";
+    //         $this->response['status'] = 401;
+    //         return $this->getError();
+    //     }
+    
+    //     if ($request->hasFile('file')) {
+    //         $file = $request->file('file')->storePublicly('users/' . $data['user_id'] . '/account_files/' . $data['field']);
+    //         $query->{$data['field']} = "https://erdt.s3.us-east-1.amazonaws.com/$file";
+    //         $query->save();
+    //         return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
+    //     } else {
+    //         $this->response['error'] = "Upload Failed";
+    //         $this->response['status'] = 401;
+    //         return $this->getError();
+    //     }
+    // }
+    
+    // Upload in bulk
     public function updateByParameter(Request $request) {
         $data = $request->validate([
             'user_id' => 'required|integer',
-            'file' => 'required|file',
-            'field' => 'required|string',
+            // No need to validate 'file' here since we're handling multiple files
         ]);
     
         $query = AccountDetails::find($data['user_id']);
-        if(!$query){
+        if (!$query) {
             $this->response['error'] = "Account Not Found";
             $this->response['status'] = 401;
             return $this->getError();
         }
     
-        if ($request->hasFile('file')) {
-            $file = $request->file('file')->storePublicly('users/' . $data['user_id'] . '/account_files/' . $data['field']);
-            $query->{$data['field']} = "https://erdt.s3.us-east-1.amazonaws.com/$file";
-            $query->save();
-            return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
-        } else {
-            $this->response['error'] = "Upload Failed";
-            $this->response['status'] = 401;
-            return $this->getError();
+        // Iterate over each file in the request
+        foreach ($request->allFiles() as $field => $file) {
+            if ($file) {
+                $filePath = $file->storePublicly('users/' . $data['user_id'] . '/account_files/' . $field);
+                $query->{$field} = "https://erdt.s3.us-east-1.amazonaws.com/$filePath";
+            }
         }
-    }
     
+        $query->save();
+        return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
+    }
+
     public function updateProgram(Request $request){
         $data = $request->all();
         $query = AccountDetails::find($data['id']);
