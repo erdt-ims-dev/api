@@ -156,7 +156,10 @@ class AccountDetailsController extends APIController
                 $query->{$field} = "https://erdt.s3.us-east-1.amazonaws.com/$filePath";
             }
         }
-    
+        
+        $user = User::where('id', '=', $data['user_id'])->first();
+        $user->account_type = "applicant";
+        $user->save();
         $query->save();
         return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
     }
