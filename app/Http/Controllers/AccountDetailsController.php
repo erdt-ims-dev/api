@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Password;
 
 use App\Models\User;
 use App\Models\AccountDetails;
+use App\Models\ScholarRequestApplication;
 
 use Carbon\Carbon;
 
@@ -156,10 +157,17 @@ class AccountDetailsController extends APIController
                 $query->{$field} = "https://erdt.s3.us-east-1.amazonaws.com/$filePath";
             }
         }
-        
+        // Update UserTable's account_type
         $user = User::where('id', '=', $data['user_id'])->first();
         $user->account_type = "applicant";
+        // Create new entry on ScholarRequestApplication
+        $application = new ScholarRequestApplication();
+        $application->account_details_id = AccountDetails::find($data['user_id'])->id;
+        $application->scholar_id = null;
+        $application->status = 'pending';
+        
         $user->save();
+        $application->save();
         $query->save();
         return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
     }

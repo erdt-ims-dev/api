@@ -16,7 +16,7 @@ class CreateScholarRequest extends Migration
         Schema::create('scholar_request_application', function (Blueprint $table) {
             $table->id('id');
             $table->string('account_details_id');
-            $table->string('scholar_id');
+            $table->string('scholar_id')->nullable();
             $table->string('status');
             $table->string('comment_id')->nullable();
             $table->timestamps();

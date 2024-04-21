@@ -50,10 +50,11 @@ class AuthController extends APIController
     public function insertNew($data)
     {
         try {
-            // $userUuid = Str::uuid()->toString();
+            $userUuid = Str::uuid()->toString();
             // $accountDetailUuid = Str::uuid()->toString();
 
             $user = new User();
+            $user->uuid = $userUuid;
             $user->email = $data['email'];
             $user->account_type = 'new';
             $user->session_token = null;
