@@ -106,43 +106,16 @@ class AccountDetailsController extends APIController
             $this->response['status'] = 200;
         }
     }
-    // use user id? or use id itself when finding what to update?
-    // gonna add both methods
-    
-    // This is for single uploads, kinda inefficient
-    // public function updateByParameter(Request $request) {
-    //     $data = $request->validate([
-    //         'user_id' => 'required|integer',
-    //         'file' => 'required|file',
-    //         'field' => 'required|string',
-    //     ]);
-    
-    //     $query = AccountDetails::find($data['user_id']);
-    //     if(!$query){
-    //         $this->response['error'] = "Account Not Found";
-    //         $this->response['status'] = 401;
-    //         return $this->getError();
-    //     }
-    
-    //     if ($request->hasFile('file')) {
-    //         $file = $request->file('file')->storePublicly('users/' . $data['user_id'] . '/account_files/' . $data['field']);
-    //         $query->{$data['field']} = "https://erdt.s3.us-east-1.amazonaws.com/$file";
-    //         $query->save();
-    //         return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
-    //     } else {
-    //         $this->response['error'] = "Upload Failed";
-    //         $this->response['status'] = 401;
-    //         return $this->getError();
-    //     }
-    // }
     
     // Upload in bulk
     public function updateByParameter(Request $request) {
         $data = $request->validate([
             'user_id' => 'required|integer',
-            // No need to validate 'file' here since we're handling multiple files
         ]);
-    
+        // Update UserTable's account_type
+        $user = User::where('id', '=', $data['user_id'])->first();
+        $user->account_type = "applicant";
+
         $query = AccountDetails::find($data['user_id']);
         if (!$query) {
             $this->response['error'] = "Account Not Found";
@@ -153,13 +126,11 @@ class AccountDetailsController extends APIController
         // Iterate over each file in the request
         foreach ($request->allFiles() as $field => $file) {
             if ($file) {
-                $filePath = $file->storePublicly('users/' . $data['user_id'] . '/account_files/' . $field);
+                $filePath = $file->storePublicly('users/' . $user->uuid . '/account_files/' . $field);
                 $query->{$field} = "https://erdt.s3.us-east-1.amazonaws.com/$filePath";
             }
         }
-        // Update UserTable's account_type
-        $user = User::where('id', '=', $data['user_id'])->first();
-        $user->account_type = "applicant";
+        
         // Create new entry on ScholarRequestApplication
         $application = new ScholarRequestApplication();
         $application->account_details_id = AccountDetails::find($data['user_id'])->id;
@@ -172,196 +143,33 @@ class AccountDetailsController extends APIController
         return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
     }
 
-    public function updateProgram(Request $request){
-        $data = $request->all();
-        $query = AccountDetails::find($data['id']);
-        if(!$query){
+    public function uploadNewFile(Request $request) {
+        $data = $request->validate([
+            'user_id' => 'required|integer',
+        ]);
+        // Update UserTable's account_type
+        $user = User::where('id', '=', $data['user_id'])->first();
+
+        $query = AccountDetails::find($data['user_id']);
+        if (!$query) {
             $this->response['error'] = "Account Not Found";
             $this->response['status'] = 401;
             return $this->getError();
         }
-        if($query){
-            // AWS
-            if($request->hasFile('program')){
-                $file = $request->file('program')->storePublicly('users/'.$data['user_id'].'/account_files/birth/');
-                $query->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
-                $this->response['data'] =  "Submitted";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 200;
-            }else{
-                $this->response['data'] =  "failed";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 402;
+    
+        // Iterate over each file in the request
+        foreach ($request->allFiles() as $field => $file) {
+            if ($file) {
+                $filePath = $file->storePublicly('users/' . $user->uuid . '/account_files/' . $field);
+                $query->{$field} = "https://erdt.s3.us-east-1.amazonaws.com/$filePath";
             }
         }
+        $query->save();
+        return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
     }
-    public function updateBirth(Request $request){
-        $data = $request->all();
-        $query = AccountDetails::find($data['id']);
-        if(!$query){
-            $this->response['error'] = "Account Not Found";
-            $this->response['status'] = 401;
-            return $this->getError();
-        }
-        if($query){
-            // AWS
-            if($request->hasFile('birth')){
-                $file = $request->file('birth')->storePublicly('users/'.$data['user_id'].'/account_files/birth/');
-                $query->profile_picture ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
-                $this->response['data'] =  "Submitted";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 200;
-            }else{
-                $this->response['data'] =  "failed";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 402;
-            }
-        }
-    }
-    public function updateTor(Request $request){
-        $data = $request->all();
-        $query = AccountDetails::find($data['id']);
-        if(!$query){
-            $this->response['error'] = "Account Not Found";
-            $this->response['status'] = 401;
-            return $this->getError();
-        }
-        if($query){
-            // AWS
-            if($request->hasFile('tor')){
-                $file = $request->file('tor')->storePublicly('users/'.$data['user_id'].'/account_files/tor/');
-                $query->tor ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
-                $query->save();
-                $this->response['data'] =  "Submitted";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 200;
-            }else{
-                $this->response['data'] =  "failed";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 402;
-            }
-        }
-    }
-    public function updateEssay(Request $request){
-        $data = $request->all();
-        $query = AccountDetails::find($data['id']);
-        if(!$query){
-            $this->response['error'] = "Account Not Found";
-            $this->response['status'] = 401;
-            return $this->getError();
-        }
-        if($query){
-            // AWS
-            if($request->hasFile('essay')){
-                $file = $request->file('essay')->storePublicly('users/'.$data['user_id'].'/account_files/essay/');
-                $query->narrative_essay ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
-                $query->save();
-                $this->response['data'] =  "Submitted";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 200;
-            }else{
-                $this->response['data'] =  "failed";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 402;
-            }
-        }
-    }
-    public function updateRecommendation(Request $request){
-        $data = $request->all();
-        $query = AccountDetails::find($data['id']);
-        if(!$query){
-            $this->response['error'] = "Account Not Found";
-            $this->response['status'] = 401;
-            return $this->getError();
-        }
-        if($query){
-            // AWS
-            if($request->hasFile('recommendation')){
-                $file = $request->file('essay')->storePublicly('users/'.$data['user_id'].'/account_files/recommendation/');
-                $query->recommendation_letter ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
-                $query->save();
-                $this->response['data'] =  "Submitted";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 200;
-            }else{
-                $this->response['data'] =  "failed";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 402;
-            }
-        }
-    }
-    public function updateMedical(Request $request){
-        $data = $request->all();
-        $query = AccountDetails::find($data['id']);
-        if(!$query){
-            $this->response['error'] = "Account Not Found";
-            $this->response['status'] = 401;
-            return $this->getError();
-        }
-        if($query){
-            // AWS
-            if($request->hasFile('medical')){
-                $file = $request->file('medical')->storePublicly('users/'.$data['user_id'].'/account_files/medical/');
-                $query->medical_certificate ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
-                $query->save();
-                $this->response['data'] =  "Submitted";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 200;
-            }else{
-                $this->response['data'] =  "failed";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 402;
-            }
-        }
-    }
-    public function updateNBI(Request $request){
-        $data = $request->all();
-        $query = AccountDetails::find($data['id']);
-        if(!$query){
-            $this->response['error'] = "Account Not Found";
-            $this->response['status'] = 401;
-            return $this->getError();
-        }
-        if($query){
-            // AWS
-            if($request->hasFile('nbi')){
-                $file = $request->file('medical')->storePublicly('users/'.$data['user_id'].'/account_files/nbi/');
-                $query->nbi_clearance ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
-                $query->save();
-                $this->response['data'] =  "Submitted";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 200;
-            }else{
-                $this->response['data'] =  "failed";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 402;
-            }
-        }
-    }
-    public function updateNotice(Request $request){
-        $data = $request->all();
-        $query = AccountDetails::find($data['id']);
-        if(!$query){
-            $this->response['error'] = "Account Not Found";
-            $this->response['status'] = 401;
-            return $this->getError();
-        }
-        if($query){
-            // AWS
-            if($request->hasFile('notice')){
-                $file = $request->file('medical')->storePublicly('users/'.$data['user_id'].'/account_files/notice/');
-                $query->admission_notice ="https://erdt.s3.us-east-1.amazonaws.com/$file"; 
-                $query->save();
-                $this->response['data'] =  "Submitted";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 200;
-            }else{
-                $this->response['data'] =  "failed";
-                $this->response['details'] =  $query;
-                $this->response['status'] = 402;
-            }
-        }
-    }
+
+
+    
 
     public function retrieveAll(Request $request){
         $response = AccountDetails::all();
