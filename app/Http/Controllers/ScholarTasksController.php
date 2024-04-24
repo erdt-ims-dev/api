@@ -29,12 +29,12 @@ class ScholarTasksController extends APIController
         $data = $request->all();
         $scholar = new ScholarTasks();
         // $scholar->id = $scholarUuid;
-        $scholar->user_id = $data['user_id']; // user_id comes from Frontend
+        $scholar->scholar_id = $data['scholar_id']; // user_id comes from Frontend
         $s3BaseUrl = config('app.s3_base_url');
 
         // AWS Calls
-        $midterm = $request->file('midterm_assessment')->storePubliclyAs('users/'.$data['user_id'].'/academic_files/asessments', "midterm_asessment_".$formatted);
-        $finals = $request->file('final_assessment')->storePubliclyAs('users/'.$data['user_id'].'/academic_files/asessments', "final_assessment_".$formatted);
+        $midterm = $request->file('midterm_assessment')->storePubliclyAs('users/'.$data['scholar_id'].'/academic_files/asessments', "midterm_asessment_".$formatted);
+        $finals = $request->file('final_assessment')->storePubliclyAs('users/'.$data['scholar_id'].'/academic_files/asessments', "final_assessment_".$formatted);
         
         // Shove the generated links to DB
         $scholar->midterm_assessment = "{$s3BaseUrl}{$midterm}";
