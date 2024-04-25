@@ -143,7 +143,7 @@ class AccountDetailsController extends APIController
         return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
     }
 
-    public function uploadNewFile(Request $request) {
+    public function uploadNewFiles(Request $request) {
         $data = $request->validate([
             'user_id' => 'required|integer',
         ]);
