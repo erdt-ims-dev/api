@@ -14,6 +14,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
+    's3_base_url' => env('S3_BASE_URL', 'https://erdt.s3.us-east-1.amazonaws.com/'),
 
     /*
     |--------------------------------------------------------------------------
