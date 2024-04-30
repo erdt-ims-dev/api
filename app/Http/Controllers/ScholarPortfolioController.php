@@ -25,11 +25,10 @@ class ScholarPortfolioController extends APIController
         $study_name = $data['study_name'];
         $s3BaseUrl = config('app.s3_base_url');
         // AWS Calls
-        if($study_name != null){
-            $study = $request->file('study')->storePubliclyAs('users/'.$data['user_id'].'/academic_files/portfolio/'.$study_name, $study_name.$formatted);
-        }  
+        $study = $request->file('study')->storePublicly('users/'.$data['user_id'].'/scholar/portfolio');
         // Main
         // $portfolio->id = $portfolioUuid;
+        $portfolio->study = "{$s3BaseUrl}{$study}";
         $portfolio->user_id = $data['scholar_id'];
         $portfolio->study_name = $data['study_name'];
         //$portfolio->study = "{$s3BaseUrl}{$study}"; 
@@ -98,8 +97,8 @@ class ScholarPortfolioController extends APIController
         }
         if($query){
             // AWS Calls
-            $study = $request->file('study')->storePubliclyAs('users/'.$data['user_id'].'/academic_files/portfolio/'.$data['study_name'], $data['study_name'].$formatted);
-
+            $study = $request->file('study')->storePublicly('users/'.$data['user_id'].'/scholar/portfolio');
+            
             $query->study_name = $data['study_name'];
             $query->study = "{$s3BaseUrl}{$study}";
             $query->study_category = $data['study_category']; // case study, journal, etc.

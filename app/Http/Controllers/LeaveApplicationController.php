@@ -21,8 +21,10 @@ class LeaveApplicationController extends APIController
             $leave->user_id = $data['user_id'];
             $leave->leave_start = $data['leave_start'];
             $leave->leave_end = $data['leave_end'];
-            
-            $letter = $request->file('leave_letter')->storePublicly('users/'.$data['user_id'].'/external_files/leaves/');
+
+            $s3BaseUrl = config('app.s3_base_url');
+            $letter = $request->file('leave_letter')->storePublicly('users/'.$data['user_id'].'/scholar/leave_application');
+
             $leave->leave_reason = "{$s3BaseUrl}{$letter}";
             $leave->status = 'pending'; 
             $leave->save();
@@ -65,6 +67,7 @@ class LeaveApplicationController extends APIController
 
         $data = $request->all();
         $query = LeaveApplication::find($data['id']);
+        $s3BaseUrl = config('app.s3_base_url');
         if(!$query){
             $this->response['error'] = "Comment Not Found";
             $this->response['status'] = 401;
@@ -74,6 +77,11 @@ class LeaveApplicationController extends APIController
             $query->user_id = $data['user_id'];
             $query->leave_start = $data['leave_start'];
             $query->leave_end = $data['leave_end'];
+
+            //aws call
+            $letter = $request->file('leave_letter')->storePublicly('users/'.$data['user_id'].'/scholar/leave_application');
+
+            $query->letter = "{$s3BaseUrl}{$letter}";
             $query->leave_reason = $data['leave_reason'];
             $query->status = $data['status'];
             $query->save();

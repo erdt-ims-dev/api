@@ -33,8 +33,8 @@ class ScholarTasksController extends APIController
         $s3BaseUrl = config('app.s3_base_url');
         //dd($s3BaseUrl);
         // AWS Calls
-        $midterm = $request->file('midterm_assessment')->storePublicly('users/'.$data['scholar_id'].'/academic_files/asessments');
-        $finals = $request->file('final_assessment')->storePublicly('users/'.$data['scholar_id'].'/academic_files/asessments');
+        $midterm = $request->file('midterm_assessment')->storePublicly('users/'.$data['scholar_id'].'/scholar/tasks');
+        $finals = $request->file('final_assessment')->storePublicly('users/'.$data['scholar_id'].'/scholar/tasks');
         
         // Shove the generated links to DB
         $scholar->midterm_assessment = "{$s3BaseUrl}{$midterm}";
@@ -70,9 +70,11 @@ class ScholarTasksController extends APIController
         }
 
     }
+
     public function update(Request $request){
         $data = $request->all();
-        $query = ScholarTasks::find($data['id']);
+        $query = ScholarTasks::find($data['scholar_id']);
+        
         if(!$query){
             $this->response['error'] = "Not Found";
             $this->response['status'] = 401;
@@ -87,14 +89,14 @@ class ScholarTasksController extends APIController
             // Update will create a new one and return the latest generated files. 1/25/24
 
             // AWS Calls
-            $midterm = $request->file('midterm_assessment')->storePubliclyAs('users/'.$data['user_id'].'/academic_files/asessments', "midterm_asessment_".$formatted);
-            $finals = $request->file('final_assessment')->storePubliclyAs('users/'.$data['user_id'].'/academic_files/asessments', "final_assessment_".$formatted);
+            $midterm = $request->file('midterm_assessment')->storePublicly('users/'.$data['scholar_id'].'/scholar/tasks');
+            $finals = $request->file('final_assessment')->storePublicly('users/'.$data['scholar_id'].'/scholar/tasks');
             
             // Shove the generated links to DB
             $query->midterm_assessment = "https://erdt.s3.us-east-1.amazonaws.com/{$midterm}";
             $query->final_assessment = "https://erdt.s3.us-east-1.amazonaws.com/{$finals}";
             $query->approval_status = $data['status'] ?? false;
-            $scholar->save();
+            $query->save();
             
 
 
