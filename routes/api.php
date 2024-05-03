@@ -87,6 +87,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveMultipleByParameter', [LeaveApplicationController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [LeaveApplicationController::class, 'retrieveAll']);
         Route::post('update', [LeaveApplicationController::class, 'update']);
+        Route::post('updateOne', [LeaveApplicationController::class, 'updateOne']);
         Route::post('delete', [LeaveApplicationController::class, 'delete']);
     });
 
@@ -112,6 +113,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveMultipleByParameter', [ScholarPortfolioController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [ScholarPortfolioController::class, 'retrieveAll']);
         Route::post('update', [ScholarPortfolioController::class, 'update']);
+        Route::post('updateOne', [ScholarPortfolioController::class, 'updateOne']);
         Route::post('delete', [ScholarPortfolioController::class, 'delete']);
     });
     Route::prefix('/scholar_request/')->group(function () {
@@ -132,6 +134,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveOne', [ScholarTasksController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultipleByParameter', [ScholarTasksController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [ScholarTasksController::class, 'retrieveAll']);
+        Route::post('updateOne', [ScholarTasksController::class, 'updateOne']);
         Route::post('update', [ScholarTasksController::class, 'update']);
         Route::post('delete', [ScholarTasksController::class, 'delete']);
     });

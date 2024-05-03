@@ -25,14 +25,14 @@ class ScholarPortfolioController extends APIController
         $study_name = $data['study_name'];
         $s3BaseUrl = config('app.s3_base_url');
         // AWS Calls
-        $study = $request->file('study')->storePublicly('users/'.$data['user_id'].'/scholar/portfolio');
+        $study = $request->file('study')->storePublicly('users/'.$data['scholar_id'].'/scholar/portfolio');
         // Main
         // $portfolio->id = $portfolioUuid;
         $portfolio->study = "{$s3BaseUrl}{$study}";
-        $portfolio->user_id = $data['scholar_id'];
+        $portfolio->scholar_id = $data['scholar_id'];
         $portfolio->study_name = $data['study_name'];
         //$portfolio->study = "{$s3BaseUrl}{$study}"; 
-        $portfolio->study = $data['study']; //<- remove this once on files
+        $portfolio->study = "{$s3BaseUrl}{$study}"; //<- remove this once on files
         $portfolio->study_category = $data['study_category']; // "case study", "journal",
         $portfolio->publish_type = $data['publish_type']; // "local", "international"
         $portfolio->save();
@@ -99,11 +99,35 @@ class ScholarPortfolioController extends APIController
             // AWS Calls
             $study = $request->file('study')->storePublicly('users/'.$data['user_id'].'/scholar/portfolio');
             
-            $query->study_name = $data['study_name'];
             $query->study = "{$s3BaseUrl}{$study}";
+            $query->study_name = $data['study_name'];
             $query->study_category = $data['study_category']; // case study, journal, etc.
             $query->publish_type = $data['publish_type']; // 1 for local, 2 for international
             $query->save();
+        }
+    }
+    public function updateOne(Request $request){
+        $data = $request->all();
+        $query = ScholarPortfolio::find($data['id']);
+        if(!$query){
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        if($query){
+             // AWS Calls
+            
+             $study = $request->file('study')->storePublicly('users/'.$data['scholar_id'].'/scholar/portfolio');
+ 
+             $query->study = "https://erdt.s3.us-east-1.amazonaws.com/{$study}";
+             $query->study_name = $data['study_name'];
+             $query->study_category = $data['study_category']; // case study, journal, etc.
+             $query->publish_type = $data['publish_type'];
+             
+             $query->save();
+            $this->response['data'] = $query;
+            $this->response['status'] = 200;
+            return $this->getResponse();
         }
     }
 }

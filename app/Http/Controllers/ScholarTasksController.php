@@ -39,10 +39,11 @@ class ScholarTasksController extends APIController
         // Shove the generated links to DB
         $scholar->midterm_assessment = "{$s3BaseUrl}{$midterm}";
         $scholar->final_assessment = "{$s3BaseUrl}{$finals}";
-        $scholar->approval_status = false;
+        $scholar->approval_status = 'pending';
         $scholar->save();
-        $this->response['data'] =  "Submitted";
-        $this->response['details'] =  $scholar;
+        //$updatedscholar = ScholarTasks::where('scholar_id', '=', $data['scholar_id'])->get();
+        $this->response['data'] =  $scholar;
+       // $this->response['details'] =  $scholar;
         $this->response['status'] = 200;
         return $this->getResponse();
         
@@ -89,12 +90,15 @@ class ScholarTasksController extends APIController
             // Update will create a new one and return the latest generated files. 1/25/24
 
             // AWS Calls
+            
             $midterm = $request->file('midterm_assessment')->storePublicly('users/'.$data['scholar_id'].'/scholar/tasks');
             $finals = $request->file('final_assessment')->storePublicly('users/'.$data['scholar_id'].'/scholar/tasks');
-            
-            // Shove the generated links to DB
+
             $query->midterm_assessment = "https://erdt.s3.us-east-1.amazonaws.com/{$midterm}";
             $query->final_assessment = "https://erdt.s3.us-east-1.amazonaws.com/{$finals}";
+        
+            
+            // Shove the generated links to DB
             $query->approval_status = $data['status'] ?? false;
             $query->save();
             
@@ -103,6 +107,32 @@ class ScholarTasksController extends APIController
             // $query->midterm_assessment =$binaryFiles['midterm_assessment'] ?? null;
             // $query->final_assessment = $binaryFiles['final_assessment'] ?? null;
             $query->save();
+        }
+    }
+    public function updateOne (Request $request)    {
+        $data = $request->all();
+        $query = ScholarTasks::find($data['id']);
+        if(!$query){
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        if($query){
+             // AWS Calls
+            
+             $midterm = $request->file('midterm_assessment')->storePublicly('users/'.$data['scholar_id'].'/scholar/tasks');
+             $finals = $request->file('final_assessment')->storePublicly('users/'.$data['scholar_id'].'/scholar/tasks');
+ 
+             $query->midterm_assessment = "https://erdt.s3.us-east-1.amazonaws.com/{$midterm}";
+             $query->final_assessment = "https://erdt.s3.us-east-1.amazonaws.com/{$finals}";
+         
+             
+             // Shove the generated links to DB
+             $query->approval_status = $data['approval_status'] ?? false;
+             $query->save();
+            $this->response['data'] = $query;
+            $this->response['status'] = 200;
+            return $this->getResponse();
         }
     }
     public function retrieveOneByParameter(Request $request)    {
