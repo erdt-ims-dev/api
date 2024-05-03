@@ -29,12 +29,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-
+Route::get('/', function () {
+    return view('index');
+});
 Route::prefix('/app/')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login'])->name('app.login');
     Route::post('forgot_password', [AuthController::class, 'forgot_password']);
     
+    
+
     Route::prefix('/authenticate/')->group(function () {
         Route::post('auth', [AuthController::class, 'authenticate']);
         Route::post('user', [AuthController::class, 'getAuthenticatedUser']);
