@@ -24,8 +24,8 @@ class LeaveApplicationController extends APIController
 
             $s3BaseUrl = config('app.s3_base_url');
             $letter = $request->file('leave_letter')->storePublicly('users/'.$data['user_id'].'/scholar/leave_application');
-
-            $leave->leave_reason = "{$s3BaseUrl}{$letter}";
+            $leave->comment_id = "for approval";
+            $leave->leave_letter = "{$s3BaseUrl}{$letter}";
             $leave->status = 'pending'; 
             $leave->save();
             $this->response['data'] = "Created";
@@ -82,7 +82,6 @@ class LeaveApplicationController extends APIController
             $letter = $request->file('leave_letter')->storePublicly('users/'.$data['user_id'].'/scholar/leave_application');
 
             $query->letter = "{$s3BaseUrl}{$letter}";
-            $query->leave_reason = $data['leave_reason'];
             $query->status = $data['status'];
             $query->save();
             $this->response['data'] = true;
@@ -90,7 +89,30 @@ class LeaveApplicationController extends APIController
             return $this->getResponse();
         }
     }
-
+    public function updateOne(Request $request){
+        $data = $request->all();
+        $query = LeaveApplication::find($data['id']);
+        if(!$query){
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        if($query){
+             // AWS Calls
+            
+             $letter = $request->file('leave_letter')->storePublicly('users/'.$data['user_id'].'/scholar/portfolio');
+ 
+             $query->leave_letter = "https://erdt.s3.us-east-1.amazonaws.com/{$letter}";
+             $query->leave_start = $data['leave_start'];
+             $query->leave_end = $data['leave_end'];
+             $query->status = $data['status'];
+             
+             $query->save();
+            $this->response['data'] = $query;
+            $this->response['status'] = 200;
+            return $this->getResponse();
+        }
+    }
     public function delete(Request $request) {
         
         $data = $request->all();
