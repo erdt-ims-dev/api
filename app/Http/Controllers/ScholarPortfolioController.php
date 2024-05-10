@@ -116,15 +116,18 @@ class ScholarPortfolioController extends APIController
         }
         if($query){
              // AWS Calls
+            if ($request->file('study') !== null){
+                $study = $request->file('study')->storePublicly('users/'.$data['scholar_id'].'/scholar/portfolio');
+                $query->study = "https://erdt.s3.us-east-1.amazonaws.com/{$study}";
+            } else {
+                $query->study = $data['study'];
+            }
+
+            $query->study_name = $data['study_name'];
+            $query->study_category = $data['study_category']; // case study, journal, etc.
+            $query->publish_type = $data['publish_type'];
             
-             $study = $request->file('study')->storePublicly('users/'.$data['scholar_id'].'/scholar/portfolio');
- 
-             $query->study = "https://erdt.s3.us-east-1.amazonaws.com/{$study}";
-             $query->study_name = $data['study_name'];
-             $query->study_category = $data['study_category']; // case study, journal, etc.
-             $query->publish_type = $data['publish_type'];
-             
-             $query->save();
+            $query->save();
             $this->response['data'] = $query;
             $this->response['status'] = 200;
             return $this->getResponse();

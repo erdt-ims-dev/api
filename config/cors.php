@@ -21,7 +21,7 @@ return [
 
     'allowed_origins' => ['http://localhost:3000', 'http://localhost:3001', 'http://bindr.site'],
     
-    // 'allowed_origins' => ['http://bindr.site'],
+    //'allowed_origins' => ['http://bindr.site'],
 
     'allowed_origins_patterns' => [],
 
