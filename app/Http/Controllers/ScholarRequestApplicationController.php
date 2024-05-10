@@ -47,7 +47,7 @@ class ScholarRequestApplicationController extends APIController
     }
     public function delete(Request $request){
         $data = $request->all();
-        $query = ScholarRequestApplication::find($data['id']);
+        $query = ScholarRequestApplication::where('account_details_id', '=', $data['id'])->first();;
         if(!$query){
             $this->response['error'] = "Account Not Found";
             $this->response['status'] = 401;
@@ -55,6 +55,23 @@ class ScholarRequestApplicationController extends APIController
         }
         if($query){
             $query->delete();
+            $this->response['data'] = true;
+            $this->response['status'] = 200;
+            return $this->getResponse();
+        }
+
+    }
+    public function reject(Request $request){
+        $data = $request->all();
+        $query = ScholarRequestApplication::where('account_details_id', '=', $data['id'])->first();;
+        if(!$query){
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        if($query){
+            $query->status = 'rejected';
+            $query->save();
             $this->response['data'] = true;
             $this->response['status'] = 200;
             return $this->getResponse();
@@ -123,13 +140,13 @@ class ScholarRequestApplicationController extends APIController
     }
     public function approveApplicant(Request $request) {
         $data = $request->validate([
-            // takes id for table
+            // takes account details id from table
             'id' => 'required|integer',
         ]);
     
-        $query = ScholarRequestApplication::find($data['id']);
+        $query = ScholarRequestApplication::where('account_details_id', '=', $data['id'])->first();
         if(!$query){
-            $this->response['error'] = "Account Not Found";
+            $this->response['error'] = "ID Not Found";
             $this->response['status'] = 401;
             return $this->getError();
         }
