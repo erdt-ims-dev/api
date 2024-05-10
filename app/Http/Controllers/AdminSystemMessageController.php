@@ -39,8 +39,10 @@ class AdminSystemMessageController extends APIController
             return $this->getError();
         }
         if($query){
+            $query->status = 'inactive';
+            $query->save();
             $query->delete();
-            $this->response['data'] = true;
+            $this->response['data'] = 'Deleted';
             $this->response['status'] = 200;
             return $this->getResponse();
         }
@@ -79,9 +81,12 @@ class AdminSystemMessageController extends APIController
         }
         if($query){
             // AWS
-            $query->message_by = $data['message_by'];
-            $query->system_message = $data['system_message'];
+            $query->message_title = $data['message_title'];
+            $query-> message_body = $data['message_body'];
             $query->save();
+            $this->response['data'] = $query;
+            $this->response['status'] = 200;
+            return $this->getResponse();
         }
     }
 }
