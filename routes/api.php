@@ -128,6 +128,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('update', [ScholarRequestApplicationController::class, 'update']);
         Route::post('updateToEndorsed', [ScholarRequestApplicationController::class, 'updateToEndorsed']);
         Route::post('delete', [ScholarRequestApplicationController::class, 'delete']);
+        Route::post('reject', [ScholarRequestApplicationController::class, 'reject']);
     });
     Route::prefix('/scholar_tasks/')->group(function () {
         Route::post('create', [ScholarTasksController::class, 'create']);
