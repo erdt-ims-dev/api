@@ -52,6 +52,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveOne', [CommentsController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultiple', [CommentsController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [CommentsController::class, 'retrieveAll']);
+        Route::post('retrieveWithAccountDetails', [CommentsController::class, 'retrieveWithAccountDetails']);
         Route::post('update', [CommentsController::class, 'update']);
         Route::post('delete', [CommentsController::class, 'delete']);
         Route::post('forgot_password', [AuthController::class, 'forgotPassword']);
