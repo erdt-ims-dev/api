@@ -116,6 +116,8 @@ class AuthController extends APIController
                     $user = Auth::user();
                     $account = [
                         'email' => $user['email'],
+                        'status' => $user['status'],
+                        'account_type' => $user['account_type'],
                         'token' => $user->createToken($data['email'])->plainTextToken
                     ];
                     $this->response['data'] = $account;
@@ -163,6 +165,7 @@ class AuthController extends APIController
     }
     public function forgotPassword(Request $request)
     {
+        // requires email
         $data = $request->all();
         $valid = RequestValidatorServiceProvider::forgotPasswordValidator($data);
         if (!$valid) {
