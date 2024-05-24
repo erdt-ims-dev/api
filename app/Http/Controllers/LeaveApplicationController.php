@@ -23,8 +23,13 @@ class LeaveApplicationController extends APIController
             $leave->leave_end = $data['leave_end'];
 
             $s3BaseUrl = config('app.s3_base_url');
-            $letter = $request->file('leave_letter')->storePublicly('users/'.$data['user_id'].'/scholar/leave_application');
-            $leave->comment_id = "for approval";
+            if($request->file('leave_letter')){
+                $letter = $request->file('leave_letter')->storePublicly('users/'.$data['user_id'].'/scholar/leave_application');
+            }else{
+                
+            }
+
+            $leave->comment_id = $data['comment_id'];
             $leave->leave_letter = "{$s3BaseUrl}{$letter}";
             $leave->status = 'pending'; 
             $leave->save();
@@ -99,10 +104,13 @@ class LeaveApplicationController extends APIController
         }
         if($query){
              // AWS Calls
-            
-             $letter = $request->file('leave_letter')->storePublicly('users/'.$data['user_id'].'/scholar/portfolio');
- 
-             $query->leave_letter = "https://erdt.s3.us-east-1.amazonaws.com/{$letter}";
+            if ($request->file('leave_letter')) {
+                $letter = $request->file('leave_letter')->storePublicly('users/'.$data['user_id'].'/scholar/portfolio');
+                $query->leave_letter = "https://erdt.s3.us-east-1.amazonaws.com/{$letter}";
+            } else {
+                $query->leave_letter = $data['leave_letter'];
+            }
+             
              $query->leave_start = $data['leave_start'];
              $query->leave_end = $data['leave_end'];
              $query->status = $data['status'];
