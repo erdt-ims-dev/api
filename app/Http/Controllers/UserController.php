@@ -28,6 +28,10 @@ class UserController extends APIController
         }
         return $this->getResponse();
     }
+    public function retrieveOneWithData(Request $request)
+    {
+        $data = $request->all();
+    }
     public function retrieveMultipleByParameter(Request $request)    {
     
         $data = $request->all();
