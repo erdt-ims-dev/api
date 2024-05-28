@@ -52,6 +52,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveOne', [CommentsController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultiple', [CommentsController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [CommentsController::class, 'retrieveAll']);
+        Route::post('retrieveWithAccountDetails', [CommentsController::class, 'retrieveWithAccountDetails']);
         Route::post('update', [CommentsController::class, 'update']);
         Route::post('delete', [CommentsController::class, 'delete']);
         Route::post('forgot_password', [AuthController::class, 'forgotPassword']);
@@ -66,6 +67,10 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveStatistics', [UserController::class, 'retrieveStatistics']);
         Route::post('delete', [UserController::class, 'delete']);
         Route::post('update', [UserController::class, 'update']);
+        Route::post('updateProfile', [UserController::class, 'updateProfile']);
+        Route::post('updateEmail', [UserController::class, 'updateEmail']);
+        Route::post('updatePassword', [UserController::class, 'updatePassword']);
+
     });
     // 2-20-24 update statements are not yet done, new update method
     // 3-19-24 update statements routed
