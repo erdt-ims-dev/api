@@ -79,8 +79,9 @@ Route::prefix('/app/')->group(function () {
         Route::post('delete', [AccountDetailsController::class, 'delete']);
         
         Route::post('update', [AccountDetailsController::class, 'updateByParameter']);
+        Route::post('updateDetails', [AccountDetailsController::class, 'updateDetails']);
         Route::post('uploadNewFiles', [AccountDetailsController::class, 'uploadNewFiles']);
-
+        Route::post('updateDataAndFiles', [AccountDetailsController::class, 'updateDataAndFiles']);
         Route::post('retrieveOne', [AccountDetailsController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultipleByParameter', [AccountDetailsController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [AccountDetailsController::class, 'retrieveAll']);
