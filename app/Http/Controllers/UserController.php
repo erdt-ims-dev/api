@@ -138,7 +138,7 @@ class UserController extends APIController
             return $this->getError();
         }
 
-        // Step 2: Retrieve the user and validate the current password
+        // Retrieve the user and validate the current password
         $user = User::where('id', '=', $formData['user_id'])->first();
         if (!$user) {
             // User not found
@@ -194,6 +194,7 @@ class UserController extends APIController
                 'account_type' => $user['account_type'],
             ];
             // Prepare the response
+            // dd($account);
             $this->response['details'] = $query;
             $this->response['user'] = $account;
             $this->response['status'] = 200;
