@@ -248,4 +248,14 @@ class UserController extends APIController
         $this->response['status'] = 200;
         return $this->getResponse();
     }
+    public function retrieveEmailAccountDetails(Request $request)    {
+        // receives email, searches User table for id, uses id to search AccountDetails table
+        $data = $request->all();
+        $response = User::where('email', '=', $data['email'])->first();
+        $details = AccountDetails::where("user_id", '=', $response->id)->get()->first();
+        $this->response['details'] = $details;
+        $this->response['user'] = $response;
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
 }

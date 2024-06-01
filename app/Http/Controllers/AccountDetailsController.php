@@ -193,4 +193,54 @@ class AccountDetailsController extends APIController
         $this->response['status'] = 200;
         return $this->getResponse();
     }
+
+    public function setupProfile(Request $request) {
+        $data = $request->validate([
+            'user_id' => 'required|integer',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'program' => 'required|string',
+        ]);
+        $validatedData = $request->validate([
+            'middle_name' => 'nullable|string'
+        ], [], ['middle_name' => 'Middle Name']);
+        // Update UserTable's account_type
+        $user = User::where('id', '=', $data['user_id'])->first();
+        $user->account_type = "applicant";
+
+        $query = AccountDetails::find($data['user_id']);
+        if (!$query) {
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        $query->first_name = $data['first_name'];
+        if ($validatedData['middle_name']) {
+            $query->middle_name = $validatedData['middle_name'];
+        } else {
+            $query->middle_name = '';
+        }
+        $query->last_name = $data['last_name'];
+        $query->program = $data['program'];
+
+        // Iterate over each file in the request
+        foreach ($request->allFiles() as $field => $file) {
+            if ($file) {
+                $filePath = $file->storePublicly('users/' . $user->uuid . '/account_files/' . $field);
+                $query->{$field} = "https://erdt.s3.us-east-1.amazonaws.com/$filePath";
+            }
+        }
+        
+        
+        // Create new entry on ScholarRequestApplication
+        $application = new ScholarRequestApplication();
+        $application->account_details_id = AccountDetails::find($data['user_id'])->id;
+        $application->scholar_id = null;
+        $application->status = 'pending';
+        
+        $user->save();
+        $application->save();
+        $query->save();
+        return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
+    }
 }

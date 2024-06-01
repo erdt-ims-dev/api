@@ -223,5 +223,14 @@ class ScholarRequestApplicationController extends APIController
         $this->response['status'] = 200;
         return $this->getResponse();
     }
+    public function retrieveUserApplications(Request $request)    {
+        // where status = endorsed
+        $data = $request->all();
+        $response = ScholarRequestApplication::where('account_details_id', '=', $data['id'])->get();
+
+        $this->response['data'] = $response;
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
 
 }

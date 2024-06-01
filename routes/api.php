@@ -63,6 +63,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveOne', [UserController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultiple', [UserController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveWithAccountDetails', [UserController::class, 'retrieveWithAccountDetailsWithEmail']);
+        Route::post('retrieveEmailAccountDetails', [UserController::class, 'retrieveEmailAccountDetails']);
         Route::post('retrieveFilter', [UserController::class, 'retrieveMultipleByFilter']);
         Route::post('retrieveStatistics', [UserController::class, 'retrieveStatistics']);
         Route::post('delete', [UserController::class, 'delete']);
@@ -79,6 +80,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('delete', [AccountDetailsController::class, 'delete']);
         
         Route::post('update', [AccountDetailsController::class, 'updateByParameter']);
+        Route::post('setupProfile', [AccountDetailsController::class, 'setupProfile']);
         Route::post('uploadNewFiles', [AccountDetailsController::class, 'uploadNewFiles']);
 
         Route::post('retrieveOne', [AccountDetailsController::class, 'retrieveOneByParameter']);
@@ -101,6 +103,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveOne', [AdminSystemMessageController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultipleByParameter', [AdminSystemMessageController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [AdminSystemMessageController::class, 'retrieveAll']);
+        Route::post('retrieveViaDashboard', [AdminSystemMessageController::class, 'retrieveViaDashboard']);
         Route::post('update', [AdminSystemMessageController::class, 'update']);
         Route::post('delete', [AdminSystemMessageController::class, 'delete']);
     });
@@ -128,6 +131,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveAll', [ScholarRequestApplicationController::class, 'retrieveAll']);
         Route::post('retrievePendingTableAndDetail', [ScholarRequestApplicationController::class, 'retrievePendingTableAndDetail']);
         Route::post('retrieveEndorsedTableAndDetail', [ScholarRequestApplicationController::class, 'retrieveEndorsedTableAndDetail']);
+        Route::post('retrieveUserApplications', [ScholarRequestApplicationController::class, 'retrieveUserApplications']);
         Route::post('approveApplicant', [ScholarRequestApplicationController::class, 'approveApplicant']);
 
         Route::post('update', [ScholarRequestApplicationController::class, 'update']);

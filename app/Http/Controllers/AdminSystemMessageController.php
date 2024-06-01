@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 use App\Models\AdminSystemMessage;
+use App\Models\User;
+use App\Models\AccountDetails;
 
 class AdminSystemMessageController extends APIController
 {
@@ -88,5 +90,45 @@ class AdminSystemMessageController extends APIController
             $this->response['status'] = 200;
             return $this->getResponse();
         }
+    }
+
+    public function retrieveViaDashboard(Request $request){
+        // First, retrieve the latest 10 active messages
+        $messages = AdminSystemMessage::where('status', '=', 'active')
+                                      ->orderBy('created_at', 'desc')
+                                      ->take(10)
+                                      ->get();
+    
+        $mergedData = [];
+    
+        foreach ($messages as $message) {
+            // Use the email from the message to find the corresponding user ID
+            $userId = User::where('email', $message->message_by)->first()->id;
+    
+            // Once you have the user ID, use it to find the profile picture in AccountDetails
+            $accountDetail = AccountDetails::where('user_id', $userId)->first();
+    
+            // Merge the message with its profile picture into a single object
+            $mergedEntry = [
+                'message' => [
+                    'id' => $message->id,
+                    'message_by' => $message->message_by,
+                    'message_title' => $message->message_title,
+                    'message_body' => $message->message_body,
+                    'status' => $message->status,
+                    'created_at' => $message->created_at,
+                ],
+                'profilePicture' => $accountDetail? $accountDetail->profile_picture : null,
+            ];
+    
+            // Add the merged entry to the array
+            $mergedData[] = $mergedEntry;
+        }
+    
+        // Prepare the response
+        $this->response['data'] = $mergedData;
+        $this->response['status'] = 200;
+    
+        return $this->getResponse();
     }
 }
