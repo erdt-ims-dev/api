@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 use App\Models\Scholar;
+use App\Models\User;
 
 class ScholarController extends APIController
 {
@@ -54,7 +55,8 @@ class ScholarController extends APIController
         return $this->getResponse();
     }
     public function retrieveAll(Request $request){
-        $response = Scholar::all();
+        //$response = Scholar::all();
+        $response = User::where('account_type', '=', 'scholar')->get();
         $this->response['data'] = $response;
         $this->response['status'] = 200;
         return $this->getResponse();

@@ -149,7 +149,6 @@ class AccountDetailsController extends APIController
         ]);
         // Update UserTable's account_type
         $user = User::where('id', '=', $data['user_id'])->first();
-
         $query = AccountDetails::find($data['user_id']);
         if (!$query) {
             $this->response['error'] = "Account Not Found";
@@ -164,11 +163,38 @@ class AccountDetailsController extends APIController
                 $query->{$field} = "https://erdt.s3.us-east-1.amazonaws.com/$filePath";
             }
         }
+        
         $query->save();
         return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
     }
 
-
+    public function updateDataAndFiles(Request $request) {
+        $data = $request->all();
+        // Update UserTable's account_type
+        $user = User::where('id', '=', $data['user_id'])->first();
+        $query = AccountDetails::find($data['user_id']);
+        if (!$query) {
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+    
+        // Iterate over each file in the request
+        foreach ($request->allFiles() as $field => $file) {
+            if ($file) {
+                $filePath = $file->storePublicly('users/' . $user->uuid . '/account_files/' . $field);
+                $query->{$field} = "https://erdt.s3.us-east-1.amazonaws.com/$filePath";
+            }
+        }
+        $query->first_name = $data['first_name'];
+        $query->middle_name = $data['middle_name'];
+        $query->last_name = $data['last_name'];
+        $query->program = $data['program'];
+        $user->email = $data['email'];
+        $query->save();
+        $user->save();
+        return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
+    }
     
 
     public function retrieveAll(Request $request){

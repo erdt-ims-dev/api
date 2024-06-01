@@ -82,7 +82,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('update', [AccountDetailsController::class, 'updateByParameter']);
         Route::post('setupProfile', [AccountDetailsController::class, 'setupProfile']);
         Route::post('uploadNewFiles', [AccountDetailsController::class, 'uploadNewFiles']);
-
+        Route::post('updateDataAndFiles', [AccountDetailsController::class, 'updateDataAndFiles']);
         Route::post('retrieveOne', [AccountDetailsController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultipleByParameter', [AccountDetailsController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [AccountDetailsController::class, 'retrieveAll']);
