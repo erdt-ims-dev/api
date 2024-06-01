@@ -13,7 +13,7 @@ use App\Models\Scholar;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class ScholarRequestApplicationController extends APIController
@@ -223,11 +223,18 @@ class ScholarRequestApplicationController extends APIController
         $this->response['status'] = 200;
         return $this->getResponse();
     }
-    public function retrieveUserApplications(Request $request)    {
+    public function retrieveUserApplications(Request $request) {
         // where status = endorsed
         $data = $request->all();
-        $response = ScholarRequestApplication::where('account_details_id', '=', $data['id'])->get();
-
+        $response = ScholarRequestApplication::where('account_details_id', '=', $data['id'])
+            ->select(['*']) // Select all columns
+            ->get();
+    
+        // Use Carbon to format the created_at date
+        foreach ($response as $item) {
+            $item->created_at = \Carbon\Carbon::parse($item->created_at)->format('Y-m-d');
+        }
+    
         $this->response['data'] = $response;
         $this->response['status'] = 200;
         return $this->getResponse();
