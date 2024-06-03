@@ -119,6 +119,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('create', [ScholarPortfolioController::class, 'create']);
         Route::post('retrieveOneByParameter', [ScholarPortfolioController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultipleByParameter', [ScholarPortfolioController::class, 'retrieveMultipleByParameter']);
+        Route::post('retrieveByEmail', [ScholarPortfolioController::class, 'retrieveByEmail']);
         Route::post('retrieveAll', [ScholarPortfolioController::class, 'retrieveAll']);
         Route::post('update', [ScholarPortfolioController::class, 'update']);
         Route::post('updateOne', [ScholarPortfolioController::class, 'updateOne']);

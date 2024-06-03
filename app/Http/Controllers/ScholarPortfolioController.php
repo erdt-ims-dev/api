@@ -64,6 +64,14 @@ class ScholarPortfolioController extends APIController
         }
 
     }
+    public function retrieveByEmail(Request $request)    {
+    
+        $data = $request->all();
+        $response = ScholarPortfolio::where('email', '=', $data['email'])->get();
+        $this->response['data'] = $response[0];
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
     public function retrieveOneByParameter(Request $request)    {
     
         $data = $request->all();

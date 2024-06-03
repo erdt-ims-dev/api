@@ -119,13 +119,18 @@ class ScholarTasksController extends APIController
         }
         if($query){
              // AWS Calls
-            
-             $midterm = $request->file('midterm_assessment')->storePublicly('users/'.$data['scholar_id'].'/scholar/tasks');
-             $finals = $request->file('final_assessment')->storePublicly('users/'.$data['scholar_id'].'/scholar/tasks');
- 
-             $query->midterm_assessment = "https://erdt.s3.us-east-1.amazonaws.com/{$midterm}";
-             $query->final_assessment = "https://erdt.s3.us-east-1.amazonaws.com/{$finals}";
-         
+             if ($request->file('midterm_assessment') !== null){
+                $midterm = $request->file('midterm_assessment')->storePublicly('users/'.$data['scholar_id'].'/scholar/tasks');
+                $query->midterm_assessment = "https://erdt.s3.us-east-1.amazonaws.com/{$midterm}";
+            } else {
+                $query->midterm_assessment = $data['midterm_assessment'];
+            }
+            if ($request->file('final_assessment') !== null){
+                $final = $request->file('final_assessment')->storePublicly('users/'.$data['scholar_id'].'/scholar/tasks');
+                $query->final_assessment = "https://erdt.s3.us-east-1.amazonaws.com/{$final}";
+            } else {
+                $query->final_assessment = $data['final_assessment'];
+            }
              
              // Shove the generated links to DB
              $query->approval_status = $data['approval_status'] ?? false;
