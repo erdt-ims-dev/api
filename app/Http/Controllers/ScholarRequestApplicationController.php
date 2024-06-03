@@ -125,8 +125,8 @@ class ScholarRequestApplicationController extends APIController
         $data = $request->validate([
             'id' => 'required|integer',
         ]);
-    
-        $query = ScholarRequestApplication::find($data['id']);
+        
+        $query = ScholarRequestApplication::where('account_details_id', '=', $data['id'])->first();
         if(!$query){
             $this->response['error'] = "Account Not Found";
             $this->response['status'] = 401;
@@ -168,6 +168,10 @@ class ScholarRequestApplicationController extends APIController
             $res->save();
             $query->scholar_id = $res->id;
             $query->save();
+
+            $user = User::where('id', '=', $data['id'])->first();
+            $user->account_type = 'scholar';
+            $user->save();
             $this->response['data'] =  $query;
             $this->response['status'] = 200;
             return $this->getResponse();

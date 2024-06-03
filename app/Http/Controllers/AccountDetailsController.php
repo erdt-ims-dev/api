@@ -133,7 +133,7 @@ class AccountDetailsController extends APIController
         
         // Create new entry on ScholarRequestApplication
         $application = new ScholarRequestApplication();
-        $application->account_details_id = AccountDetails::find($data['user_id'])->id;
+        $application->account_details_id = AccountDetails::where('user_id', '=', $data['user_id'])->first();
         $application->scholar_id = null;
         $application->status = 'pending';
         
@@ -260,7 +260,7 @@ class AccountDetailsController extends APIController
         
         // Create new entry on ScholarRequestApplication
         $application = new ScholarRequestApplication();
-        $application->account_details_id = AccountDetails::find($data['user_id'])->id;
+        $application->account_details_id = AccountDetails::where('user_id', '=', $data['user_id'])->first()->id;
         $application->scholar_id = null;
         $application->status = 'pending';
         
