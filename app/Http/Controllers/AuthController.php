@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Mail;
+
+
+use App\Mail\SendPasswordMail;
 
 use App\Providers\RequestValidatorServiceProvider;
 
@@ -47,38 +51,45 @@ class AuthController extends APIController
         }
     }
     // Used when using the registration form
-    public function insertNew($data)
-    {
-        try {
-            $userUuid = Str::uuid()->toString();
-            // $accountDetailUuid = Str::uuid()->toString();
 
-            $user = new User();
-            $user->uuid = $userUuid;
-            $user->email = $data['email'];
-            $user->account_type = 'new';
-            $user->session_token = null;
-            $user->password = Hash::make($data['password']);
-            $user->status = 'verified';
-            $user->save();
 
-            $accountDetails = new AccountDetails();
-            $accountDetails->user_id = $user->id;
-            $accountDetails->first_name = $data['first_name'];
-            $accountDetails->middle_name = '';
-            $accountDetails->profile_picture = '';
-            $accountDetails->last_name = $data['last_name'];
-            $accountDetails->save();
+public function insertNew($data)
+{
+    try {
+        // Generate user UUID and random password
+        $userUuid = Str::uuid()->toString();
+        $generatedPassword = Str::random(8); // Generate a random 8-character password
 
-            event(new Registered($user));
-            $this->response['data'] = $user;
-            return $this->getResponse();
-        } catch (\Throwable $th) {
-            $this->response['error'] = $th->getMessage();
-            $this->response['status'] = $th->getCode();
-            return $this->getResponse();
-        }
+        $user = new User();
+        $user->uuid = $userUuid;
+        $user->email = $data['email'];
+        $user->account_type = 'new';
+        $user->session_token = null;
+        $user->password = Hash::make($generatedPassword); // Save hashed password
+        $user->status = 'verified';
+        $user->save();
+
+        $accountDetails = new AccountDetails();
+        $accountDetails->user_id = $user->id;
+        $accountDetails->first_name = $data['first_name'];
+        $accountDetails->middle_name = '';
+        $accountDetails->profile_picture = '';
+        $accountDetails->last_name = $data['last_name'];
+        $accountDetails->save();
+
+        // Send email to the user with their password
+        Mail::to($user->email)->send(new SendPasswordMail($generatedPassword));
+
+        event(new Registered($user));
+        $this->response['data'] = $user;
+        return $this->getResponse();
+    } catch (\Throwable $th) {
+        $this->response['error'] = $th->getMessage();
+        $this->response['status'] = $th->getCode();
+        return $this->getResponse();
     }
+}
+
     //used when manually creating an account - admin panel
     public function newUser($data){
         $userUuid = Str::uuid()->toString();
