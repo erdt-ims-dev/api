@@ -30,65 +30,72 @@ class AuthController extends APIController
 {
     
 
-    public function register(Request $requests){
-        $data = $requests->all();
-        // validate input values
-        $valid = RequestValidatorServiceProvider::registerValidator($data);
-        if ($valid) {
-            // checks if email already exists in User table
-            $response = User::where("email", '=' ,$data['email'])->get();
-            if($response->isEmpty()){
-                return $this->insertNew($data);
-            }else{
-                $this->response['error'] = "Email already exists";
-                $this->response['status'] = 401;
-                return $this->getResponse();   
-            }
-        }else{
-            $this->response['error'] = $valid['error'];
-            $this->response['status'] = 401;
-            return $this->getResponse();
-        }
+    public function register(Request $request)
+{
+    $data = $request->all();
+    
+    // Validate input values
+    $valid = RequestValidatorServiceProvider::registerValidator($data);
+    
+    if (!$valid) {
+        $this->response['error'] = $valid['error'];
+        $this->response['status'] = 401;
+        return $this->getResponse();
     }
+
+    // Check if the email already exists in the User table
+    if (User::where('email', $data['email'])->exists()) {
+        $this->response['error'] = "Email already exists";
+        $this->response['status'] = 401;
+        return $this->getResponse();
+    }
+
+    // Insert new user since the email does not exist
+    return $this->insertNew($data);
+}
+
     // Used when using the registration form
 
 
-public function insertNew($data)
-{
-    try {
-        // Generate user UUID and random password
-        $userUuid = Str::uuid()->toString();
-        $generatedPassword = Str::random(8); // Generate a random 8-character password
-
-        $user = new User();
-        $user->uuid = $userUuid;
-        $user->email = $data['email'];
-        $user->account_type = 'new';
-        $user->session_token = null;
-        $user->password = Hash::make($generatedPassword); // Save hashed password
-        $user->status = 'verified';
-        $user->save();
-
-        $accountDetails = new AccountDetails();
-        $accountDetails->user_id = $user->id;
-        $accountDetails->first_name = $data['first_name'];
-        $accountDetails->middle_name = '';
-        $accountDetails->profile_picture = '';
-        $accountDetails->last_name = $data['last_name'];
-        $accountDetails->save();
-
-        // Send email to the user with their password
-        Mail::to($user->email)->send(new SendPasswordMail($generatedPassword));
-
-        event(new Registered($user));
-        $this->response['data'] = $user;
-        return $this->getResponse();
-    } catch (\Throwable $th) {
-        $this->response['error'] = $th->getMessage();
-        $this->response['status'] = $th->getCode();
-        return $this->getResponse();
+    public function insertNew($data)
+    {
+        try {
+            $userUuid = Str::uuid()->toString();
+            $generatedPassword = Str::random(8);
+            $user = new User();
+            $user->uuid = $userUuid;
+            $user->email = $data['email'];
+            $user->account_type = 'new';
+            $user->session_token = null;
+            $user->password = Hash::make($generatedPassword);
+            $user->status = 'verified';
+            $user->save();
+    
+            $accountDetails = new AccountDetails();
+            $accountDetails->user_id = $user->id;
+            $accountDetails->first_name = $data['first_name'];
+            $accountDetails->middle_name = '';
+            $accountDetails->profile_picture = '';
+            $accountDetails->last_name = $data['last_name'];
+            $accountDetails->save();
+            
+            // Send the password email to the user
+            $password = $generatedPassword;  // This is the plain password (not hashed)
+            Mail::send('emails.sendPassword', ['password' => $password], function ($message) use ($user) {
+                $message->to($user->email)
+                        ->subject('Your Account Password');
+            });
+    
+            event(new Registered($user));
+            $this->response['data'] = $user;
+            return $this->getResponse();
+        } catch (\Throwable $th) {
+            $this->response['error'] = $th->getMessage();
+            $this->response['status'] = $th->getCode();
+            return $this->getResponse();
+        }
     }
-}
+    
 
     //used when manually creating an account - admin panel
     public function newUser($data){
