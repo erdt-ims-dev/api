@@ -122,48 +122,44 @@ class UserController extends APIController
 
     public function updatePassword(Request $request) {
         $formData = $request->all();
-
-        // Step 1: Validate formData to ensure it contains the necessary fields
+    
         $validator = Validator::make($formData, [
-            'user_id' => 'required|integer',
-            'current_password' => 'required|string|min:8|max:255',
+            'email' => 'required|email',  // Validate email
             'new_password' => 'required|string|min:8|max:255',
         ]);
-
+    
         if ($validator->fails()) {
             // Validation failed, return error response
-            // $this->response['error'] = $validator->errors();
-            $this->response['error'] = 'Invalid fields';
-            $this->response['status'] = 400;
-            return $this->getError();
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid fields',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ], 400);
         }
-
-        // Retrieve the user and validate the current password
-        $user = User::where('id', '=', $formData['user_id'])->first();
+    
+        $user = User::where('email', '=', $formData['email'])->first();
         if (!$user) {
             // User not found
-            $this->response['error'] = "User not found.";
-            $this->response['status'] = 404;
-            return $this->getError();
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found',
+                'status' => 404
+            ], 404);
         }
-
-        // Validate the current password
-        if (!Hash::check($formData['current_password'], $user->password)) {
-            $this->response['error'] = "Current password does not match.";
-            $this->response['status'] = 401;
-            return $this->getError();
-        }
-
-        // Update the password
+    
         $user->password = Hash::make($formData['new_password']);
+        $user->status = 'verified'; // Update the user status to 'verified'
         $user->save();
-
-        // Prepare the response
-        $this->response['data'] = true;
-        $this->response['status'] = 200;
-
-        return $this->getResponse();
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Password successfully changed!',
+            'status' => 200
+        ], 200);
     }
+    
+    
     public function updateEmail(Request $request) {
         $formData = $request->all();
 
@@ -255,6 +251,15 @@ class UserController extends APIController
         $details = AccountDetails::where("user_id", '=', $response->id)->get()->first();
         $this->response['details'] = $details;
         $this->response['user'] = $response;
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
+    public function changePassword(Request $request)    {
+        // receives email, searches User table for id, uses id to search AccountDetails table
+        $data = $request->all();
+        $response = User::where('email', '=', $data['email'])->first();
+        // change password logic here
+        $this->response['data'] = $details;
         $this->response['status'] = 200;
         return $this->getResponse();
     }

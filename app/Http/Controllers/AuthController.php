@@ -68,7 +68,7 @@ class AuthController extends APIController
             $user->account_type = 'new';
             $user->session_token = null;
             $user->password = Hash::make($generatedPassword);
-            $user->status = 'verified';
+            $user->status = 'unverified';
             $user->save();
     
             $accountDetails = new AccountDetails();
