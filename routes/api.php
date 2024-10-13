@@ -55,7 +55,6 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveWithAccountDetails', [CommentsController::class, 'retrieveWithAccountDetails']);
         Route::post('update', [CommentsController::class, 'update']);
         Route::post('delete', [CommentsController::class, 'delete']);
-        Route::post('forgot_password', [AuthController::class, 'forgotPassword']);
     });
 
     Route::prefix('/user/')->group(function () {

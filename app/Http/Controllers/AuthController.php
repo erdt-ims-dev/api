@@ -181,7 +181,7 @@ class AuthController extends APIController
             return $this->getError();
         }
     }
-    public function forgotPassword(Request $request)
+    public function forgot_password(Request $request)
     {
         // requires email
         $data = $request->all();
@@ -212,8 +212,9 @@ class AuthController extends APIController
     // JWT Related
 
     public function __construct(){
-        $this->middleware('auth:api', ['except' => ['authenticate', 'login', 'register']]);
+        $this->middleware('auth:api', ['except' => ['authenticate', 'login', 'register', 'forgot_password']]);
     }
+    
     // public function authenticate(Request $request){
     //     // validate if account exists
     //     $data = $request->all();
