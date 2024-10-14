@@ -18,7 +18,7 @@ class CreatePasswordResetsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('token');
             $table->timestamp('used_at')->nullable();
-            $table->timestamp('expires_at');
+            $table->timestamp('expires_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         
