@@ -9,21 +9,22 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Mail;
-
+use Illuminate\Support\Facades\DB;
 
 use App\Mail\SendPasswordMail;
+use App\Mail\ResetPasswordMail;
 
 use App\Providers\RequestValidatorServiceProvider;
 
 use Laravel\Sanctum\Sanctum;
 
 use App\Models\User;
+use App\Models\PasswordResets;
 use App\Models\AccountDetails;
 use App\Models\LoginAttempts;
 
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuthExceptions\JWTException;
-
 use Carbon\Carbon;
 
 class AuthController extends APIController
@@ -181,9 +182,12 @@ class AuthController extends APIController
             return $this->getError();
         }
     }
+    // Password Resets - WIP
+
+    // Sends reset link to email
     public function forgot_password(Request $request)
     {
-        // requires email
+        // Validate the request (ensure the email is provided)
         $data = $request->all();
         $valid = RequestValidatorServiceProvider::forgotPasswordValidator($data);
         if (!$valid) {
@@ -191,28 +195,66 @@ class AuthController extends APIController
             $this->response['status'] = 500;
             return $this->getResponse();
         }
+    
+        // Find the user by email
+        $user = User::where('email', $data['email'])->first();
+        if (!$user) {
+            $this->response['error'] = 'User not found';
+            $this->response['status'] = 404; // or 500 based on your logic
+            return $this->getResponse();
+        }
+    
+        // Generate the reset token and store it
+        $token = Str::random(60); // Use your logic for generating the token
+        PasswordResets::create([
+            'user_id' => $user->id,
+            'token' => $token,
+            'expires_at' => now()->addMinutes(60), // Set expiration time
+        ]);
+    
+        // Send the email using the Mailable class
+        Mail::to($user->email)->send(new ResetPasswordMail($token));
+    
+        // Return response indicating that the reset link has been sent
+        $this->response['data'] = true;
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
+    // Once link is clicked, begin reset password process
+    public function reset_password(Request $request)
+    {
+        // Validate request
+        $data = $request->all();
+        $valid = RequestValidatorServiceProvider::resetPasswordValidator($data);
+        if (!$valid) {
+            $this->response['error'] = 'Invalid Data Provided';
+            $this->response['status'] = 500;
+            return $this->getResponse();
+        }
 
-        try {
-            $response = Password::sendResetLink(['email' => $data['email']]);
-            if ($response === Password::RESET_LINK_SENT) {
-                $this->response['data'] = true;
-                $this->response['status'] = 200;
-                return $this->getResponse();
-            } else {
-                $this->response['error'] = 'Unable to send reset link';
-                $this->response['status'] = 500;
-                return $this->getError();
+        $response = Password::reset(
+            $data,
+            function ($user, $password) {
+                // Reset the user's password
+                $user->password = Hash::make($password);
+                $user->save();
             }
-        } catch (\Throwable $th) {
-            $this->response['error'] = $th->getMessage();
-            $this->response['status'] = $th->getCode();
+        );
+
+        if ($response == Password::PASSWORD_RESET) {
+            $this->response['data'] = true;
+            $this->response['status'] = 200;
+            return $this->getResponse();
+        } else {
+            $this->response['error'] = 'Password reset failed';
+            $this->response['status'] = 500;
             return $this->getError();
         }
     }
     // JWT Related
 
     public function __construct(){
-        $this->middleware('auth:api', ['except' => ['authenticate', 'login', 'register', 'forgot_password']]);
+        $this->middleware('auth:api', ['except' => ['authenticate', 'login', 'register', 'forgot_password', 'send_reset']]);
     }
     
     // public function authenticate(Request $request){

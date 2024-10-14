@@ -36,6 +36,7 @@ Route::prefix('/app/')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login'])->name('app.login');
     Route::post('forgot_password', [AuthController::class, 'forgot_password']);
+    Route::post('reset_password', [AuthController::class, 'reset_password']);
     
     
 
