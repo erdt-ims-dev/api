@@ -254,7 +254,7 @@ class AuthController extends APIController
     // JWT Related
 
     public function __construct(){
-        $this->middleware('auth:api', ['except' => ['authenticate', 'login', 'register', 'forgot_password', 'send_reset']]);
+        $this->middleware('auth:api', ['except' => ['authenticate', 'login', 'register', 'forgot_password', 'reset_password']]);
     }
     
     // public function authenticate(Request $request){
