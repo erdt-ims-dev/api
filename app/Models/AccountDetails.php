@@ -25,4 +25,8 @@ class AccountDetails extends Model
         'nbi_clearance',
         'admission_notice',
         'account_type'];
+        public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

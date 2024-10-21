@@ -56,4 +56,8 @@ class User extends Authenticatable implements JWTSubject
             // Add any other custom claims as needed
         ];
     }
+    public function accountDetails()
+    {
+        return $this->hasOne(AccountDetails::class);
+    }
 }
