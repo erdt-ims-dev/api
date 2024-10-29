@@ -112,6 +112,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveOneByParameter', [ScholarController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultipleByParameter', [ScholarController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [ScholarController::class, 'retrieveAll']);
+        Route::post('filter', [ScholarController::class, 'filterRetrieve']);
         Route::post('update', [ScholarController::class, 'update']);
         Route::post('delete', [ScholarController::class, 'delete']);
     });

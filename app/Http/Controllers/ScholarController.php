@@ -61,6 +61,50 @@ class ScholarController extends APIController
         $this->response['status'] = 200;
         return $this->getResponse();
     }
+    public function filterRetrieve(Request $request)
+{
+    $data = $request->all();
+    $semester = $data['semester'] ?? null;
+    $year = $data['year'] ?? null;
+
+    if (!$semester || !$year) {
+        $this->response['data'] = [];
+        $this->response['status'] = 400;
+        $this->response['message'] = "Semester and year are required.";
+        return $this->getResponse();
+    }
+
+    // Define date ranges based on semester
+    switch ($semester) {
+        case '1st semester':
+            $startDate = "$year-01-01";
+            $endDate = "$year-04-30";
+            break;
+        case '2nd semester':
+            $startDate = "$year-08-01";
+            $endDate = "$year-11-30";
+            break;
+        case 'Summer semester':
+            $startDate = "$year-05-01";
+            $endDate = "$year-07-31";
+            break;
+        default:
+            $this->response['data'] = [];
+            $this->response['status'] = 400;
+            $this->response['message'] = "Invalid semester.";
+            return $this->getResponse();
+    }
+
+    // Retrieve users within the date range
+    $response = User::where('account_type', 'scholar')
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->get();
+
+    $this->response['data'] = $response;
+    $this->response['status'] = 200;
+    return $this->getResponse();
+}
+
     public function update(Request $request){
         $data = $request->all();
         $query = Scholar::find($data['id']);
