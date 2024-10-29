@@ -16,6 +16,20 @@ class UserController extends APIController
         $this->response['status'] = 200;
         return $this->getResponse();
     }
+    public function paginate(Request $request){
+        $limit = $request->input('limit', 10); // Default limit is 10
+        $offset = $request->input('offset', 0); // Default offset is 0
+
+        $accounts = User::skip($offset)->take($limit)->get();
+        $total = User::count(); // Total number of accounts
+
+        $this->response['data'] = [
+            'accounts' => $accounts,
+            'total' => $total,
+        ];
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
     public function retrieveOneByParameter(Request $request)    {
     
         $data = $request->all();
