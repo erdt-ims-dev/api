@@ -56,6 +56,42 @@ class AdminSystemMessageController extends APIController
         $this->response['status'] = 200;
         return $this->getResponse();
     }
+    public function paginate(Request $request){
+        $limit = $request->input('limit', 10); // Default limit is 10
+        $offset = $request->input('offset', 0); // Default offset is 0
+
+        $items = AdminSystemMessage::skip($offset)->take($limit)->get();
+        $total = AdminSystemMessage::count(); // Total number of accounts
+
+        $this->response['data'] = [
+            'items' => $items,
+            'total' => $total,
+        ];
+        $this->response['status'] = 200;
+        return $this->getResponse();
+    }
+    // public function paginate(Request $request) {
+    //     // Get the limit and page, with defaults and validation
+    //     $limit = max((int) $request->input('limit', 10), 1); // Default limit is 10, minimum 1
+    //     $page = max((int) $request->input('page', 1), 1);    // Default page is 1, minimum 1
+    //     $offset = ($page - 1) * $limit;
+    
+    //     // Fetch paginated items
+    //     $items = AdminSystemMessage::skip($offset)->take($limit)->get();
+    //     $total = AdminSystemMessage::count();
+    
+    //     // Construct paginated response
+    //     $this->response['data'] = [
+    //         'items' => $items,
+    //         'total' => $total,
+    //         'page' => $page,
+    //         'totalPages' => ceil($total / $limit), // Total pages for client reference
+    //     ];
+    //     $this->response['status'] = 200;
+    
+    //     return $this->getResponse();
+    // }
+    
     public function retrieveOneByParameter(Request $request)    {
 
         $data = $request->all();

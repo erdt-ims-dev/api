@@ -104,6 +104,8 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveMultipleByParameter', [AdminSystemMessageController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [AdminSystemMessageController::class, 'retrieveAll']);
         Route::post('retrieveViaDashboard', [AdminSystemMessageController::class, 'retrieveViaDashboard']);
+        Route::post('paginate', [AdminSystemMessageController::class, 'paginate']);
+
         Route::post('update', [AdminSystemMessageController::class, 'update']);
         Route::post('delete', [AdminSystemMessageController::class, 'delete']);
     });

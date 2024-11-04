@@ -19,9 +19,22 @@ class UserController extends APIController
     public function paginate(Request $request){
         $limit = $request->input('limit', 10); // Default limit is 10
         $offset = $request->input('offset', 0); // Default offset is 0
+        $search = $request->input('search', ''); // Get search term
+        $query = User::where('account_type', '!=', 'admin'); // Exclude admin accounts
+        // $query->orWhere('status', 'deactivated');
+        // Filter by search term if provided
+        if (!empty($search)) {
+            $query->where(function($q) use ($search) {
+                $q->where('email', 'LIKE', '%' . $search . '%')
+                ->orWhere('status', 'LIKE', '%' . $search . '%')
+                ->orWhere('account_type', 'LIKE', '%' . $search . '%');
+            });
+        }
+        // Clone the query for total count before pagination
+        $total = $query->count();
 
-        $accounts = User::skip($offset)->take($limit)->get();
-        $total = User::count(); // Total number of accounts
+        // Apply offset and limit for paginated data
+        $accounts = $query->skip($offset)->take($limit)->get();
 
         $this->response['data'] = [
             'accounts' => $accounts,
