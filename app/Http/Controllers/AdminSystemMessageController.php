@@ -59,9 +59,9 @@ class AdminSystemMessageController extends APIController
     public function paginate(Request $request){
         $limit = $request->input('limit', 10); // Default limit is 10
         $offset = $request->input('offset', 0); // Default offset is 0
+        $total = AdminSystemMessage::count(); // Total number of accounts
 
         $items = AdminSystemMessage::skip($offset)->take($limit)->get();
-        $total = AdminSystemMessage::count(); // Total number of accounts
 
         $this->response['data'] = [
             'items' => $items,
