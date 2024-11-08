@@ -236,6 +236,38 @@ class ScholarRequestApplicationController extends APIController
     
         return $this->getResponse();
     }
+    public function paginateEndorsed(Request $request) {
+        $limit = $request->input('limit', 10); // Default limit is 10
+        $offset = $request->input('offset', 0); // Default offset is 0
+    
+        // Initial query with status filter
+        $query = ScholarRequestApplication::where('status', '=', 'endorsed');
+    
+        // Paginate results
+        $total = $query->count(); // Get total count before pagination
+        $response = $query->skip($offset)->take($limit)->get();
+    
+        // Prepare data with account details
+        $paginatedData = [];
+        foreach ($response as $item) {
+            $accountDetail = AccountDetails::find($item->account_details_id);
+            if ($accountDetail) {
+                $paginatedData[] = [
+                    'list' => $item,
+                    'details' => $accountDetail,
+                ];
+            }
+        }
+    
+        // Response with paginated data
+        $this->response['data'] = [
+            'items' => $paginatedData,
+            'total' => $total,
+        ];
+        $this->response['status'] = 200;
+    
+        return $this->getResponse();
+    }
     
     public function retrieveEndorsedTableAndDetail(Request $request)    {
         // where status = endorsed

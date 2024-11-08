@@ -138,6 +138,7 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveUserApplications', [ScholarRequestApplicationController::class, 'retrieveUserApplications']);
         Route::post('approveApplicant', [ScholarRequestApplicationController::class, 'approveApplicant']);
         Route::post('paginate', [ScholarRequestApplicationController::class, 'paginate']);
+        Route::post('paginateEndorsed', [ScholarRequestApplicationController::class, 'paginateEndorsed']);
 
         Route::post('update', [ScholarRequestApplicationController::class, 'update']);
         Route::post('updateToEndorsed', [ScholarRequestApplicationController::class, 'updateToEndorsed']);
