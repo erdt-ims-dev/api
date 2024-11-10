@@ -119,7 +119,7 @@ class UserController extends APIController
         }
     
         // Retrieve the user and account details based on the ID from formData
-        $user = User::where('id', '=', $formData['id'])->first();
+        $user = User::where('id', '=', $formData['user_id'])->first();
         $details = AccountDetails::where('user_id', '=', $user->id)->first();
     
         if (!$user ||!$details) {

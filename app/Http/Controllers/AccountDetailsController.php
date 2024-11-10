@@ -234,7 +234,7 @@ class AccountDetailsController extends APIController
         $user = User::where('id', '=', $data['user_id'])->first();
         $user->account_type = "applicant";
 
-        $query = AccountDetails::find($data['user_id']);
+        $query = AccountDetails::where('user_id', '=', $data['user_id'])->first();
         if (!$query) {
             $this->response['error'] = "Account Not Found";
             $this->response['status'] = 401;

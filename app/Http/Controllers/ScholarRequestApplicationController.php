@@ -169,7 +169,7 @@ class ScholarRequestApplicationController extends APIController
             $query->scholar_id = $res->id;
             $query->save();
 
-            $user = User::where('id', '=', $data['id'])->first();
+            $user = User::where('id', '=', $details->user_id)->first();
             $user->account_type = 'scholar';
             $user->save();
             $this->response['data'] =  $query;
@@ -253,7 +253,7 @@ class ScholarRequestApplicationController extends APIController
             $accountDetail = AccountDetails::find($item->account_details_id);
             if ($accountDetail) {
                 $paginatedData[] = [
-                    'list' => $item,
+                    // 'list' => $item,
                     'details' => $accountDetail,
                 ];
             }
