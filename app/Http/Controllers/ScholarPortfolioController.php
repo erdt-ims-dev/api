@@ -15,39 +15,89 @@ use Carbon\Carbon;
 class ScholarPortfolioController extends APIController
 {
     //
-    public function create(Request $request){
-        try{
+    // public function create(Request $request){
+    //     try{
+    //     // Helpers
+    //     $portfolioUuid = Str::uuid()->toString();
+    //     // Init
+    //     $data = $request->all();
+    //     $portfolio = new ScholarPortfolio();
+    //     $study_name = $data['study_name'];
+    //     $s3BaseUrl = config('app.s3_base_url');
+    //     // AWS Calls
+    //     $study = $request->file('study')->storePublicly('users/'.$data['scholar_id'].'/scholar/portfolio');
+    //     // Main
+    //     // $portfolio->id = $portfolioUuid;
+    //     $portfolio->study = "{$s3BaseUrl}{$study}";
+    //     $portfolio->scholar_id = $data['scholar_id'];
+    //     $portfolio->study_name = $data['study_name'];
+    //     //$portfolio->study = "{$s3BaseUrl}{$study}"; 
+    //     $portfolio->study = "{$s3BaseUrl}{$study}"; //<- remove this once on files
+    //     $portfolio->study_category = $data['study_category']; // "case study", "journal",
+    //     $portfolio->publish_type = $data['publish_type']; // "local", "international"
+    //     $portfolio->save();
+    //     $this->response['data'] =  "Submitted";
+    //     $this->response['details'] =  $portfolio;
+    //     $this->response['status'] = 200;
+    //     return $this->getResponse();
+    //     }catch(\Throwable $th){
+    //         $message = $th->getMessage();
+    //         $this->response['error'] = mb_convert_encoding($message, 'UTF-8', 'auto');
+    //         $this->response['status'] = $th->getCode();
+    //         return $this->getResponse();
+    //     }
+        
+    // }
+    public function create(Request $request)
+{
+    try {
         // Helpers
         $portfolioUuid = Str::uuid()->toString();
+        
         // Init
         $data = $request->all();
         $portfolio = new ScholarPortfolio();
         $study_name = $data['study_name'];
         $s3BaseUrl = config('app.s3_base_url');
-        // AWS Calls
-        $study = $request->file('study')->storePublicly('users/'.$data['scholar_id'].'/scholar/portfolio');
-        // Main
-        // $portfolio->id = $portfolioUuid;
-        $portfolio->study = "{$s3BaseUrl}{$study}";
-        $portfolio->scholar_id = $data['scholar_id'];
-        $portfolio->study_name = $data['study_name'];
-        //$portfolio->study = "{$s3BaseUrl}{$study}"; 
-        $portfolio->study = "{$s3BaseUrl}{$study}"; //<- remove this once on files
-        $portfolio->study_category = $data['study_category']; // "case study", "journal",
-        $portfolio->publish_type = $data['publish_type']; // "local", "international"
-        $portfolio->save();
-        $this->response['data'] =  "Submitted";
-        $this->response['details'] =  $portfolio;
-        $this->response['status'] = 200;
-        return $this->getResponse();
-        }catch(\Throwable $th){
-            $message = $th->getMessage();
-            $this->response['error'] = mb_convert_encoding($message, 'UTF-8', 'auto');
-            $this->response['status'] = $th->getCode();
-            return $this->getResponse();
+        
+        // Handle multiple file uploads
+        $studyFiles = $request->file('study');
+        $studyUrls = [];
+        
+        // Loop through the files and store them on S3
+        if ($studyFiles && is_array($studyFiles)) {
+            foreach ($studyFiles as $file) {
+                // Store the file on S3
+                $filePath = $file->storePublicly('users/'.$data['scholar_id'].'/scholar/portfolio');
+                
+                // Store the full URL of the file on S3
+                $studyUrls[] = "{$s3BaseUrl}{$filePath}";
+            }
         }
         
+        // Main
+        $portfolio->study = json_encode($studyUrls); // Store array of URLs as JSON
+        $portfolio->scholar_id = $data['scholar_id'];
+        $portfolio->study_name = $study_name;
+        $portfolio->study_category = $data['study_category']; // "case study", "journal"
+        $portfolio->publish_type = $data['publish_type']; // "local", "international"
+        $portfolio->save();
+        
+        // Response
+        $this->response['data'] = "Submitted";
+        $this->response['details'] = $portfolio;
+        $this->response['status'] = 200;
+        
+        return $this->getResponse();
+    } catch (\Throwable $th) {
+        $message = $th->getMessage();
+        $this->response['error'] = mb_convert_encoding($message, 'UTF-8', 'auto');
+        $this->response['status'] = $th->getCode();
+        
+        return $this->getResponse();
     }
+}
+
     public function delete(Request $request){
         $data = $request->all();
         $query = ScholarPortfolio::find($data['id']);
