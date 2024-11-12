@@ -9,6 +9,7 @@ use App\Models\User;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 use Carbon\Carbon;
 
@@ -97,6 +98,70 @@ class ScholarPortfolioController extends APIController
         return $this->getResponse();
     }
 }
+
+    public function upload(Request $request)
+    {
+        try {
+            // Validate the input for files, file types, size, and other required fields
+            $request->validate([
+                'study' => 'required',
+                'study.*' => 'file|mimes:zip,rar|max:10240', // 10MB max per file
+                'scholar_id' => 'required|integer',
+                'study_name' => 'required|string',
+                'study_category' => 'required|string',
+                'publish_type' => 'required|string'
+            ], [
+                'study.*.max' => 'Each file must be less than 10MB.',
+                'study.*.mimes' => 'Only ZIP and RAR files are allowed.'
+            ]);
+
+            // Initialize required data
+            $data = $request->all();
+            $portfolio = new ScholarPortfolio();
+            $studyUrls = [];
+
+            // Handle multiple file uploads
+            $studyFiles = $request->file('study');
+            if ($studyFiles && is_array($studyFiles)) {
+                foreach ($studyFiles as $file) {
+                    // Store each file in AWS S3 using the specified path
+                    $filePath = $file->storePublicly("users/{$data['scholar_id']}/scholar/portfolio", 's3');
+                    
+                    // Generate a public URL for each stored file
+                    $studyUrls[] = Storage::disk('s3')->url($filePath);
+                }
+            }
+
+            // Save portfolio details in the database
+            $portfolio->study = json_encode($studyUrls); // Store URLs as JSON array
+            $portfolio->scholar_id = $data['scholar_id'];
+            $portfolio->study_name = $data['study_name'];
+            $portfolio->study_category = $data['study_category'];
+            $portfolio->publish_type = $data['publish_type'];
+            $portfolio->save();
+
+            // Build response structure
+            $this->response['data'] = "Submitted";
+            $this->response['details'] = $portfolio;
+            $this->response['status'] = 200;
+
+            return $this->getResponse();
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Return validation error messages
+            $this->response['error'] = $e->errors();
+            $this->response['status'] = 422;
+
+            return $this->getResponse();
+        } catch (\Throwable $th) {
+            // General error handling
+            $this->response['error'] = $th->getMessage();
+            $this->response['status'] = $th->getCode() ?: 500;
+
+            return $this->getResponse();
+        }
+    }
+    
 
     public function delete(Request $request){
         $data = $request->all();
@@ -191,4 +256,47 @@ class ScholarPortfolioController extends APIController
             return $this->getResponse();
         }
     }
+    public function uploadEdit(Request $request)
+    {
+        $data = $request->all();
+        $query = ScholarPortfolio::find($data['id']);
+
+        if (!$query) {
+            $this->response['error'] = "Portfolio Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+
+        if ($query) {
+            // Initialize file URLs array
+            $fileUrls = [];
+
+            // If new files are uploaded, process and store each one
+            if ($request->hasFile('study')) {
+                foreach ($request->file('study') as $file) {
+                    $path = $file->storePublicly('users/' . $data['scholar_id'] . '/scholar/portfolio');
+                    $fileUrls[] = "https://erdt.s3.us-east-1.amazonaws.com/{$path}";
+                }
+            } else {
+                // If no new files, retain current value of `study` as a JSON array
+                $fileUrls = json_decode($query->study) ?? [];
+            }
+
+            // Update only if new values are provided, otherwise keep current values
+            $query->study = json_encode($fileUrls);
+            $query->study_name = $data['study_name'] ?? $query->study_name;
+            $query->study_category = $data['study_category'] ?? $query->study_category;
+            $query->publish_type = $data['publish_type'] ?? $query->publish_type;
+
+            // Save the updated record
+            $query->save();
+
+            // Prepare response
+            $this->response['data'] = $query;
+            $this->response['status'] = 200;
+            return $this->getResponse();
+        }
+    }
+
+
 }

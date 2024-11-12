@@ -14,6 +14,7 @@ use App\Http\Controllers\ScholarPortfolioController;
 use App\Http\Controllers\ScholarRequestApplicationController;
 use App\Http\Controllers\ScholarController;
 /*
+
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
@@ -127,6 +128,9 @@ Route::prefix('/app/')->group(function () {
         Route::post('update', [ScholarPortfolioController::class, 'update']);
         Route::post('updateOne', [ScholarPortfolioController::class, 'updateOne']);
         Route::post('delete', [ScholarPortfolioController::class, 'delete']);
+        Route::post('upload', [ScholarPortfolioController::class, 'upload']);
+        Route::post('uploadEdit', [ScholarPortfolioController::class, 'uploadEdit']);
+
     });
     Route::prefix('/scholar_request/')->group(function () {
         Route::post('create', [ScholarRequestApplicationController::class, 'create']);
