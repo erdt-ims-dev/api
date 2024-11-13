@@ -97,6 +97,9 @@ Route::prefix('/app/')->group(function () {
         Route::post('update', [LeaveApplicationController::class, 'update']);
         Route::post('updateOne', [LeaveApplicationController::class, 'updateOne']);
         Route::post('delete', [LeaveApplicationController::class, 'delete']);
+        Route::post('upload', [LeaveApplicationController::class, 'upload']);
+        Route::post('uploadEdit', [LeaveApplicationController::class, 'uploadEdit']);
+
     });
 
     Route::prefix('/admin_system_message/')->group(function () {

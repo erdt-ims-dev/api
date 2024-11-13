@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
 use App\Models\LeaveApplication;
+use Illuminate\Support\Facades\Storage;
 
 class LeaveApplicationController extends APIController
 {
@@ -41,7 +42,99 @@ class LeaveApplicationController extends APIController
             return $this->getResponse();
         }
     }
-    
+    public function upload(Request $request){
+    try {
+
+        // Extract data
+        $data = $request->all();
+
+        // Create a new ScholarTask instance
+        $leave = new LeaveApplication();
+        $leave->user_id = $data['user_id'];
+        $leave->year = $data['year'];
+        $leave->semester = $data['semester'];
+
+        // Initialize S3 storage
+        $s3BaseUrl = config('app.s3_base_url');
+        $leaveFiles = $request->file('file');
+        $leaveUrls = [];
+
+        // Handle multiple file uploads
+        if ($leaveFiles && is_array($leaveFiles)) {
+            foreach ($leaveFiles as $file) {
+                // Store each file in AWS S3 using the specified path
+                $filePath = $file->storePublicly("users/{$data['user_id']}/scholar/portfolio", 's3');
+                
+                // Generate a public URL for each stored file
+                $leaveUrls[] = Storage::disk('s3')->url($filePath);
+            }
+        }
+        
+
+        // Store the file URLs as a JSON array in the database
+        $leave->file = json_encode($leaveUrls);
+        $leave->comment_id = $data['comment_id'];
+        $leave->status = 'pending'; 
+
+        $leave->save();
+
+        // Prepare the response
+        $this->response['data'] = [
+            'id' => $leave->id,
+            'leave' => $leave->user_id,
+            'year' => $leave->year,
+            'semester' => $leave->semester,
+            'file' => $leaveUrls,  // Return the list of file URLs
+            // 'approval_status' => $scholar->approval_status,
+        ];
+
+        $this->response['status'] = 200;
+        return $this->getResponse();
+
+    } catch (\Throwable $th) {
+        $this->response['error'] = mb_convert_encoding($th->getMessage(), 'UTF-8', 'auto');
+        $this->response['status'] = $th->getCode();
+        return $this->getResponse();
+    }
+    }
+
+    public function uploadEdit(Request $request){
+        $data = $request->all();
+        $query = LeaveApplication::find($data['id']);
+
+        if(!$query){
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+
+        if($query){
+            $fileUrls = [];
+
+            // If new files are uploaded, process and store each one
+            if ($request->hasFile('file')) {
+                foreach ($request->file('file') as $file) {
+                    $path = $file->storePublicly('users/' . $query->user_id . '/scholar/portfolio');
+                    $fileUrls[] = "https://erdt.s3.us-east-1.amazonaws.com/{$path}";
+                }
+            } else {
+                // If no new files, retain current value of `study` as a JSON array
+                $fileUrls = json_decode($query->file) ?? [];
+            }
+
+            // Update only if new values are provided, otherwise keep current values
+            $query->file = json_encode($fileUrls);
+            $query->year = $data['year'];
+            $query->semester = $data['semester'];
+
+            // Save the updated record
+            $query->save();
+             
+            $this->response['data'] = $query;
+            $this->response['status'] = 200;
+            return $this->getResponse();
+        }
+    }
     public function retrieveOneByParameter(Request $request)    {
     
         $data = $request->all();
@@ -121,6 +214,7 @@ class LeaveApplicationController extends APIController
             return $this->getResponse();
         }
     }
+    
     public function delete(Request $request) {
         
         $data = $request->all();

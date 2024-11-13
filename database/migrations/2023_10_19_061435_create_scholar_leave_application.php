@@ -17,9 +17,9 @@ class CreateScholarLeaveApplication extends Migration
             $table->id('id');
             $table->string('user_id');
             $table->string('comment_id')->nullable();
-            $table->date('leave_start');
-            $table->date('leave_end');      
-            $table->string('leave_letter');
+            $table->string('semester');
+            $table->string('year');      
+            $table->text('file');
             $table->string('status');
             $table->timestamps();
             $table->softDeletes();
