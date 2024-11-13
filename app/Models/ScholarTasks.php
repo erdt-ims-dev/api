@@ -13,8 +13,10 @@ class ScholarTasks extends Model
     protected $fillable = [
         'user_id',
         'scholar_id',
-        'midterm_assessment',
-        'final_assessment',
+        'year',
+        'semester',
+        'type',
+        'file',
         'approval_status',
         ];
 }
