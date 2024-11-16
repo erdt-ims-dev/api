@@ -47,13 +47,25 @@ class CommentsController extends APIController
         $this->response['scholar_req'] = $query;
         return $this->getResponse();
     }
-    public function retrieveWithAccountDetails(Request $request)    {
-    
+    public function retrieveWithAccountDetails(Request $request)
+    {
         $data = $request->all();
-        $query = ScholarRequestApplication::where("account_details_id", '=', $data['id'])->first();
-        $res = Comments::where('id', '=', $query->comment_id)->first();
-        $this->response['data'] = $res;
-        $this->response['status'] = 200;
+        $query = ScholarRequestApplication::where("id", '=', $data['id'])->first();
+
+        if ($query && $query->comment_id) {
+            $res = Comments::where('id', '=', $query->comment_id)->first();
+            if ($res) {
+                $this->response['data'] = $res;
+                $this->response['status'] = 200;
+            } else {
+                $this->response['data'] = "No comment found";
+                $this->response['status'] = 200;
+            }
+        } else {
+            $this->response['data'] = "No comment";
+            $this->response['status'] = 200;
+        }
+
         return $this->getResponse();
     }
     public function retrieveOneByParameter(Request $request)    {

@@ -58,6 +58,7 @@ class User extends Authenticatable implements JWTSubject
     }
     public function accountDetails()
     {
-        return $this->hasOne(AccountDetails::class);
+        return $this->hasOne(AccountDetails::class, 'user_id', 'id');
     }
+
 }

@@ -167,7 +167,31 @@ class AccountDetailsController extends APIController
         $query->save();
         return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
     }
-
+    public function uploadViaScholar(Request $request) {
+        // Scholar screen updates files
+        $data = $request->validate([
+            'account_details_id' => 'required|integer',
+        ]);
+        // Update UserTable's account_type
+        $query = AccountDetails::where('id', '=', $data['account_details_id'])->first();
+        $user = User::where('id', '=', $query->user_id)->first();
+        if (!$query) {
+            $this->response['error'] = "Account Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+    
+        // Iterate over each file in the request
+        foreach ($request->allFiles() as $field => $file) {
+            if ($file) {
+                $filePath = $file->storePublicly('users/' . $user->uuid . '/account_files/' . $field);
+                $query->{$field} = "https://erdt.s3.us-east-1.amazonaws.com/$filePath";
+            }
+        }
+        
+        $query->save();
+        return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
+    }
     public function updateDataAndFiles(Request $request) {
         $data = $request->all();
         // Update UserTable's account_type
@@ -268,5 +292,12 @@ class AccountDetailsController extends APIController
         $application->save();
         $query->save();
         return response()->json(['data' => "Submitted", 'details' => $query, 'status' => 200]);
+    }
+    public function retrieveWithAccountDetailsWithDetailsId(Request $request)    {
+        $data = $request->all();
+        $response = AccountDetails::where("id", '=', $data['account_details_id'])->get()->first();
+        $this->response['data'] = $response;
+        $this->response['status'] = 200;
+        return $this->getResponse();
     }
 }

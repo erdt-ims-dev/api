@@ -18,4 +18,13 @@ class LeaveApplication extends Model
         'leave_letter',
         'status',
         ];
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+    
+    public function accountDetails()
+    {
+        return $this->hasOneThrough(AccountDetails::class, User::class, 'id', 'user_id', 'user_id', 'id');
+    }
 }

@@ -7,6 +7,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
+use App\Models\AccountDetails;
+
 use App\Models\LeaveApplication;
 use Illuminate\Support\Facades\Storage;
 
@@ -98,6 +100,68 @@ class LeaveApplicationController extends APIController
     }
     }
 
+    public function uploadWithEmail(Request $request){
+        try {
+    
+            // Extract data
+            $data = $request->all();
+            $query = User::where('email', '=', $data['email'])->first();
+            if (!$query) {
+                // If no user found, set an error response
+                $this->response['error'] = 'User not found with provided email.';
+                $this->response['status'] = 404;
+                return $this->getResponse();
+            }
+            // Create a new ScholarTask instance
+            $leave = new LeaveApplication();
+            $leave->user_id = $query->id;
+            $leave->year = $data['year'];
+            $leave->semester = $data['semester'];
+    
+            // Initialize S3 storage
+            $s3BaseUrl = config('app.s3_base_url');
+            $leaveFiles = $request->file('file');
+            $leaveUrls = [];
+    
+            // Handle multiple file uploads
+            if ($leaveFiles && is_array($leaveFiles)) {
+                foreach ($leaveFiles as $file) {
+                    // Store each file in AWS S3 using the specified path
+                    $filePath = $file->storePublicly("users/{$query->id}/scholar/portfolio", 's3');
+                    
+                    // Generate a public URL for each stored file
+                    $leaveUrls[] = Storage::disk('s3')->url($filePath);
+                }
+            }
+            
+    
+            // Store the file URLs as a JSON array in the database
+            $leave->file = json_encode($leaveUrls);
+            $leave->comment_id = "None";
+            $leave->status = 'pending'; 
+    
+            $leave->save();
+    
+            // Prepare the response
+            $this->response['data'] = [
+                'id' => $leave->id,
+                'user_id' => $leave->user_id,
+                'year' => $leave->year,
+                'semester' => $leave->semester,
+                'file' => $leaveUrls,  // Return the list of file URLs
+                // 'approval_status' => $scholar->approval_status,
+            ];
+    
+            $this->response['status'] = 200;
+            return $this->getResponse();
+    
+        } catch (\Throwable $th) {
+            $this->response['error'] = mb_convert_encoding($th->getMessage(), 'UTF-8', 'auto');
+            $this->response['status'] = $th->getCode();
+            return $this->getResponse();
+        }
+        }
+
     public function uploadEdit(Request $request){
         $data = $request->all();
         $query = LeaveApplication::find($data['id']);
@@ -158,6 +222,25 @@ class LeaveApplicationController extends APIController
 
         $this->response['data'] = $response;
         $this->response['status'] = 200;
+        return $this->getResponse();
+    }
+    public function retrieveLeaves()
+    {
+        $response = LeaveApplication::with(['user', 'user.accountDetails'])->get();
+
+        $data = $response->map(function ($leave) {
+            return [
+                'leave' => $leave,
+                'email' => $leave->user->email ?? null,
+                'name' => $leave->user->accountDetails
+                    ? $leave->user->accountDetails->first_name . ' ' . $leave->user->accountDetails->last_name
+                    : null,
+            ];
+        });
+
+        $this->response['data'] = $data;
+        $this->response['status'] = 200;
+
         return $this->getResponse();
     }
 

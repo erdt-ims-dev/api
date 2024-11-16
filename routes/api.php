@@ -83,10 +83,14 @@ Route::prefix('/app/')->group(function () {
         Route::post('update', [AccountDetailsController::class, 'updateByParameter']);
         Route::post('setupProfile', [AccountDetailsController::class, 'setupProfile']);
         Route::post('uploadNewFiles', [AccountDetailsController::class, 'uploadNewFiles']);
+        Route::post('uploadViaScholar', [AccountDetailsController::class, 'uploadViaScholar']);
+
         Route::post('updateDataAndFiles', [AccountDetailsController::class, 'updateDataAndFiles']);
         Route::post('retrieveOne', [AccountDetailsController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultipleByParameter', [AccountDetailsController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [AccountDetailsController::class, 'retrieveAll']);
+        Route::post('retrieveWithAccountDetailsWithDetailsId', [AccountDetailsController::class, 'retrieveWithAccountDetailsWithDetailsId']);
+
     });
 
     Route::prefix('/leave_application/')->group(function () {
@@ -94,11 +98,15 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveOne', [LeaveApplicationController::class, 'retrieveOneByParameter']);
         Route::post('retrieveMultipleByParameter', [LeaveApplicationController::class, 'retrieveMultipleByParameter']);
         Route::post('retrieveAll', [LeaveApplicationController::class, 'retrieveAll']);
+        Route::post('retrieveLeaves', [LeaveApplicationController::class, 'retrieveLeaves']);
+
         Route::post('update', [LeaveApplicationController::class, 'update']);
         Route::post('updateOne', [LeaveApplicationController::class, 'updateOne']);
         Route::post('delete', [LeaveApplicationController::class, 'delete']);
         Route::post('upload', [LeaveApplicationController::class, 'upload']);
         Route::post('uploadEdit', [LeaveApplicationController::class, 'uploadEdit']);
+        Route::post('uploadWithEmail', [LeaveApplicationController::class, 'uploadWithEmail']);
+
 
     });
 
