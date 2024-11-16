@@ -34,7 +34,7 @@ class LeaveApplicationController extends APIController
 
             $leave->comment_id = $data['comment_id'];
             $leave->leave_letter = "{$s3BaseUrl}{$letter}";
-            $leave->status = 'pending'; 
+            $leave->status = 'Pending'; 
             $leave->save();
             $this->response['data'] = "Created";
             return $this->getResponse();
@@ -314,5 +314,104 @@ class LeaveApplicationController extends APIController
             return $this->getResponse();
         }
     }
+    public function approveLeave(Request $request) {
+        $data = $request->validate([
+            // takes account details id from table
+            'id' => 'required|integer',
+        ]);
+    
+        $query = LeaveApplication::where('id', '=', $data['id'])->first();
+        if(!$query){
+            $this->response['error'] = "ID Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        $query->status = 'Approved';
+        $query->save();
+        $this->response['data'] =  $query;
+        $this->response['status'] = 200;
+        return $this->getResponse();
+        
+    }
+    public function rejectLeave(Request $request) {
+        $data = $request->validate([
+            // takes account details id from table
+            'id' => 'required|integer',
+        ]);
+    
+        $query = LeaveApplication::where('id', '=', $data['id'])->first();
+        if(!$query){
+            $this->response['error'] = "ID Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        $query->status = 'Denied';
+        $query->save();
+        $this->response['data'] =  $query;
+        $this->response['status'] = 200;
+        return $this->getResponse();
+        
+    }
+    public function editLeave(Request $request)
+{
+    // Validate input data
+    $data = $request->validate([
+        'id' => 'required|integer',
+        'year' => 'nullable|string',
+        'semester' => 'nullable|string',
+        'status' => 'nullable|string',
+        'comment' => 'nullable|string',
+        'file' => 'nullable|array',
+        'file.*' => 'nullable|file|mimes:zip,rar,pdf|max:20480', // Restrict file types and size
+    ]);
+
+    // Find the leave request by ID
+    $leaveRequest = LeaveApplication::find($data['id']);
+
+    if (!$leaveRequest) {
+        return response()->json([
+            'error' => 'Leave request not found',
+            'status' => 404,
+        ], 404);
+    }
+
+    // Update fields if new values are provided; retain existing otherwise
+    $leaveRequest->year = $data['year'] ?? $leaveRequest->year;
+    $leaveRequest->semester = $data['semester'] ?? $leaveRequest->semester;
+    $leaveRequest->status = $data['status'] ?? $leaveRequest->status;
+    $leaveRequest->comment_id = $data['comment'] ?? $leaveRequest->comment_id; // Adjust this if the column expects an ID
+
+    // Initialize S3 storage
+    $s3BaseUrl = config('app.s3_base_url');
+    $leaveFiles = $request->file('file');
+    $leaveUrls = [];
+
+    // Handle multiple file uploads
+    if ($request->hasFile('file')) {
+    
+        if ($leaveFiles && is_array($leaveFiles)) {
+            foreach ($leaveFiles as $file) {
+                // Store each file in AWS S3 using the specified path
+                $filePath = $file->storePublicly("users/{$leaveRequest->user_id}/scholar/portfolio", 's3');
+                
+                // Generate a public URL for each stored file
+                $leaveUrls[] = Storage::disk('s3')->url($filePath);
+            }
+        }
+    }
+    // Update file URLs in the database
+    if (!empty($leaveUrls)) {
+        $leaveRequest->file = json_encode($leaveUrls);
+    }
+    // Save the updated leave request
+    $leaveRequest->save();
+
+    // Respond with the updated leave request data
+    return response()->json([
+        'data' => $leaveRequest,
+        'status' => 200,
+    ]);
+}
+
 
 }

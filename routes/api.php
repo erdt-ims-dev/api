@@ -106,6 +106,9 @@ Route::prefix('/app/')->group(function () {
         Route::post('upload', [LeaveApplicationController::class, 'upload']);
         Route::post('uploadEdit', [LeaveApplicationController::class, 'uploadEdit']);
         Route::post('uploadWithEmail', [LeaveApplicationController::class, 'uploadWithEmail']);
+        Route::post('approveLeave', [LeaveApplicationController::class, 'approveLeave']);
+        Route::post('rejectLeave', [LeaveApplicationController::class, 'rejectLeave']);
+        Route::post('editLeave', [LeaveApplicationController::class, 'editLeave']);
 
 
     });
