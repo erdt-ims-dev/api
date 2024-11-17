@@ -20,7 +20,9 @@ class UserController extends APIController
         $limit = $request->input('limit', 10); // Default limit is 10
         $offset = $request->input('offset', 0); // Default offset is 0
         $search = $request->input('search', ''); // Get search term
+        
         $query = User::where('account_type', '!=', 'admin'); // Exclude admin accounts
+        
         // $query->orWhere('status', 'deactivated');
         // Filter by search term if provided
         if (!empty($search)) {
@@ -34,8 +36,26 @@ class UserController extends APIController
         $total = $query->count();
 
         // Apply offset and limit for paginated data
-        $accounts = $query->skip($offset)->take($limit)->get();
+        // $accounts = $query->skip($offset)->take($limit)->get();
 
+            // Apply offset and limit for paginated data and eager load account details
+        $accounts = $query->with('accountDetails:id,user_id,first_name,last_name') // Eager load account details
+                        ->skip($offset)
+                        ->take($limit)
+                        ->get();
+
+        // Transform the accounts to include first_name and last_name
+        $accounts->transform(function($account) {
+            return [
+                'id' => $account->id,
+                'email' => $account->email,
+                'status' => $account->status,
+                'account_type' => $account->account_type,
+                'first_name' => $account->accountDetails->first_name ?? null, // Use null if no account details
+                'last_name' => $account->accountDetails->last_name ?? null, // Use null if no account details
+            ];
+        });
+        
         $this->response['data'] = [
             'accounts' => $accounts,
             'total' => $total,
