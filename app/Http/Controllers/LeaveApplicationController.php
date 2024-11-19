@@ -216,7 +216,7 @@ class LeaveApplicationController extends APIController
         return $this->getResponse();
     }
 
-    public function retrieveAll() {
+    public function retrieveAll(Request $request) {
 
         $response = LeaveApplication::all();
 
@@ -326,7 +326,12 @@ class LeaveApplicationController extends APIController
             $this->response['status'] = 401;
             return $this->getError();
         }
+        $user = User::where('id', '=', $query->user_id)->first();
+        
+        $user->status = "On Leave";
         $query->status = 'Approved';
+
+        $user->save();
         $query->save();
         $this->response['data'] =  $query;
         $this->response['status'] = 200;

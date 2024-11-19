@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\User;
 use App\Models\AccountDetails;
+use App\Models\LeaveApplication;
+
 use App\Models\ScholarRequestApplication;
 class UserController extends APIController
 {
@@ -20,9 +22,7 @@ class UserController extends APIController
         $limit = $request->input('limit', 10); // Default limit is 10
         $offset = $request->input('offset', 0); // Default offset is 0
         $search = $request->input('search', ''); // Get search term
-        
         $query = User::where('account_type', '!=', 'admin'); // Exclude admin accounts
-        
         // $query->orWhere('status', 'deactivated');
         // Filter by search term if provided
         if (!empty($search)) {
@@ -36,26 +36,8 @@ class UserController extends APIController
         $total = $query->count();
 
         // Apply offset and limit for paginated data
-        // $accounts = $query->skip($offset)->take($limit)->get();
+        $accounts = $query->skip($offset)->take($limit)->get();
 
-            // Apply offset and limit for paginated data and eager load account details
-        $accounts = $query->with('accountDetails:id,user_id,first_name,last_name') // Eager load account details
-                        ->skip($offset)
-                        ->take($limit)
-                        ->get();
-
-        // Transform the accounts to include first_name and last_name
-        $accounts->transform(function($account) {
-            return [
-                'id' => $account->id,
-                'email' => $account->email,
-                'status' => $account->status,
-                'account_type' => $account->account_type,
-                'first_name' => $account->accountDetails->first_name ?? null, // Use null if no account details
-                'last_name' => $account->accountDetails->last_name ?? null, // Use null if no account details
-            ];
-        });
-        
         $this->response['data'] = [
             'accounts' => $accounts,
             'total' => $total,
@@ -311,4 +293,76 @@ class UserController extends APIController
         $this->response['status'] = 200;
         return $this->getResponse();
     }
+
+    public function generateReport(Request $request) {
+        $data = $request->all();
+        $entries = []; // Initialize entries array
+        $userList = []; // Initialize userList array for ongoing scholars
+    
+        if ($data['status'] === 'on leave') {
+            // Use user table to find entries that are on leave
+            $users = User::where('status', '=', 'On Leave')->get();
+    
+            foreach ($users as $user) {
+                // Base query for leave applications
+                $leaveQuery = LeaveApplication::where('user_id', '=', $user->id)
+                                ->where('status', '=', 'Approved');
+    
+                // Apply additional filters if provided and not set to "all"
+                if (!empty($data['year']) && $data['year'] !== 'all') {
+                    $leaveQuery->where('year', '=', $data['year']);
+                }
+    
+                if (!empty($data['semester']) && $data['semester'] !== 'all') {
+                    $leaveQuery->where('semester', '=', $data['semester']);
+                }
+    
+                // Fetch the leave applications after applying all filters
+                $leaveApplications = $leaveQuery->get();
+    
+                foreach ($leaveApplications as $leave) {
+                    // Store relevant data into entries
+                    $entries[] = [
+                        'user_name' => $user->accountDetails->first_name . ' ' . $user->accountDetails->last_name,
+                        'leave_duration' => [
+                            'semester' => $leave->semester,
+                            'year' => $leave->year,
+                        ],
+                        'leave_status' => $leave->status,
+                    ];
+                }
+            }
+    
+            // Add leaves data to the response
+            $this->response['leaves'] = $entries;
+        }
+    
+        if ($data['status'] === 'on going') {
+            // Use user table to find entries that are ongoing scholars
+            $users = User::where('status', '=', 'active')
+                         ->where('account_type', '=', 'scholar')
+                         ->get();
+    
+            foreach ($users as $user) {
+                $details = AccountDetails::where('user_id', '=', $user->id)->first(); // Get the AccountDetails for the user
+                $userList[] = [
+                    'id' => $user->id,
+                    'name' => $details->first_name . ' ' . $details->last_name,
+                    'program' => $details->program,
+                    'email' => $user->email,
+                    'status' => $user->status,
+                    'account_type' => $user->account_type,
+                ];
+            }
+    
+            // Add scholars data to the response
+            $this->response['scholars'] = $userList;
+        }
+    
+        // Send response
+        $this->response['status'] = 200;
+        $this->response['data'] = $entries; // 'entries' remains for backward compatibility
+        return $this->getResponse();
+    }
+    
 }

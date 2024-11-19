@@ -13,7 +13,9 @@ use App\Http\Controllers\ScholarTasksController;
 use App\Http\Controllers\ScholarPortfolioController;
 use App\Http\Controllers\ScholarRequestApplicationController;
 use App\Http\Controllers\ScholarController;
+use App\Http\Controllers\ReportsController;
 /*
+
 
 |--------------------------------------------------------------------------
 | API Routes
@@ -73,6 +75,8 @@ Route::prefix('/app/')->group(function () {
         Route::post('updateEmail', [UserController::class, 'updateEmail']);
         Route::post('updatePassword', [UserController::class, 'updatePassword']);
         Route::post('paginate', [UserController::class, 'paginate']);
+        Route::post('generateReport', [UserController::class, 'generateReport']);
+
     });
     // 2-20-24 update statements are not yet done, new update method
     // 3-19-24 update statements routed
@@ -181,5 +185,10 @@ Route::prefix('/app/')->group(function () {
         Route::post('retrieveAll', [NotificationController::class, 'retrieveAll']);
         Route::post('update', [NotificationController::class, 'update']);
         Route::post('delete', [NotificationController::class, 'delete']);
+    });
+
+    Route::prefix('/reports/')->group(function () {
+        Route::post('generateReport', [ReportsController::class, 'generateReport']);
+        
     });
 });
