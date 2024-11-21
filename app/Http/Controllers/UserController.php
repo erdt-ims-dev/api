@@ -18,33 +18,50 @@ class UserController extends APIController
         $this->response['status'] = 200;
         return $this->getResponse();
     }
-    public function paginate(Request $request){
-        $limit = $request->input('limit', 10); // Default limit is 10
-        $offset = $request->input('offset', 0); // Default offset is 0
-        $search = $request->input('search', ''); // Get search term
-        $query = User::where('account_type', '!=', 'admin'); // Exclude admin accounts
-        // $query->orWhere('status', 'deactivated');
-        // Filter by search term if provided
-        if (!empty($search)) {
-            $query->where(function($q) use ($search) {
-                $q->where('email', 'LIKE', '%' . $search . '%')
-                ->orWhere('status', 'LIKE', '%' . $search . '%')
-                ->orWhere('account_type', 'LIKE', '%' . $search . '%');
-            });
-        }
-        // Clone the query for total count before pagination
-        $total = $query->count();
+    public function paginate(Request $request)
+{
+    $limit = $request->input('limit', 10); // Default limit is 10
+    $offset = $request->input('offset', 0); // Default offset is 0
+    $search = $request->input('search', ''); // Get search term
 
-        // Apply offset and limit for paginated data
-        $accounts = $query->skip($offset)->take($limit)->get();
+    $query = User::with('accountDetails') // Load the relationship with AccountDetails
+                 ->where('account_type', '!=', 'admin'); // Exclude admin accounts
 
-        $this->response['data'] = [
-            'accounts' => $accounts,
-            'total' => $total,
-        ];
-        $this->response['status'] = 200;
-        return $this->getResponse();
+    // Filter by search term if provided
+    if (!empty($search)) {
+        $query->where(function ($q) use ($search) {
+            $q->where('email', 'LIKE', '%' . $search . '%')
+              ->orWhere('status', 'LIKE', '%' . $search . '%')
+              ->orWhere('account_type', 'LIKE', '%' . $search . '%');
+        });
     }
+
+    // Clone the query for total count before pagination
+    $total = $query->count();
+
+    // Apply offset and limit for paginated data
+    $accounts = $query->skip($offset)->take($limit)->get();
+
+    // Map data to include first_name and last_name
+    $accounts = $accounts->map(function ($user) {
+        return [
+            'id' => $user->id,
+            'email' => $user->email,
+            'status' => $user->status,
+            'account_type' => $user->account_type,
+            'first_name' => $user->accountDetails->first_name ?? null, // Safely access AccountDetails
+            'last_name' => $user->accountDetails->last_name ?? null,
+        ];
+    });
+
+    $this->response['data'] = [
+        'accounts' => $accounts,
+        'total' => $total,
+    ];
+    $this->response['status'] = 200;
+    return $this->getResponse();
+}
+
     public function retrieveOneByParameter(Request $request)    {
     
         $data = $request->all();
