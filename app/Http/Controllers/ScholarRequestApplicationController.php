@@ -182,6 +182,97 @@ class ScholarRequestApplicationController extends APIController
         }
         
     }
+    // For Lead account type
+    public function reviewedApplicant(Request $request) {
+        $data = $request->validate([
+            // takes account details id from table
+            'id' => 'required|integer',
+        ]);
+    
+        $query = ScholarRequestApplication::where('account_details_id', '=', $data['id'])->first();
+        if(!$query){
+            $this->response['error'] = "ID Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        if($query->status == 'endorsed'){
+            $query->status = 'approved';
+            $query->save();
+        }else{
+            $this->response['error'] = "Applicant is not endorsed";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        
+        // find user using account details table
+        $details = AccountDetails::where('id', '=', $query->account_details_id)->first();
+        // create new scholar entry
+        if ($details) {
+            $res = new Scholar();
+            $res->user_id = $details->user_id;
+            $res->save();
+            $query->scholar_id = $res->id;
+            $query->save();
+
+            $user = User::where('id', '=', $details->user_id)->first();
+            $user->account_type = 'scholar';
+            $user->save();
+            $this->response['data'] =  $query;
+            $this->response['status'] = 200;
+            return $this->getResponse();
+        } else {
+            $this->response['error'] = "Account Details Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        
+    }
+    public function approveReviewedApplicant(Request $request) {
+        $data = $request->validate([
+            // takes account details id from table
+            'id' => 'required|integer',
+        ]);
+    
+        $query = ScholarRequestApplication::where('account_details_id', '=', $data['id'])->first();
+        if(!$query){
+            $this->response['error'] = "ID Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        if($query->status == 'approved'){
+            $query->status = 'reviewed';
+            $query->save();
+        }else{
+            $this->response['error'] = "Applicant is not approved";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        
+        // find user using account details table
+        $details = AccountDetails::where('id', '=', $query->account_details_id)->first();
+        // create new scholar entry
+        if ($details) {
+            $res = new Scholar();
+            $res->user_id = $details->user_id;
+            $res->save();
+            $query->scholar_id = $res->id;
+            $query->save();
+
+            $user = User::where('id', '=', $details->user_id)->first();
+            $user->account_type = 'scholar';
+            $user->save();
+            $this->response['data'] =  $query;
+            $this->response['status'] = 200;
+            return $this->getResponse();
+        } else {
+            $this->response['error'] = "Account Details Not Found";
+            $this->response['status'] = 401;
+            return $this->getError();
+        }
+        
+    }
+
+    // End Lead
     public function retrievePendingTableAndDetail(Request $request)    {
         // where status = pending
         $data = $request->all();
@@ -258,7 +349,7 @@ class ScholarRequestApplicationController extends APIController
                 ];
             }
         }
-    
+        
         // Response with paginated data
         $this->response['data'] = [
             'items' => $paginatedData,
@@ -268,7 +359,38 @@ class ScholarRequestApplicationController extends APIController
     
         return $this->getResponse();
     }
+    public function paginateReviewed(Request $request) {
+        $limit = $request->input('limit', 10); // Default limit is 10
+        $offset = $request->input('offset', 0); // Default offset is 0
     
+        // Initial query with status filter
+        $query = ScholarRequestApplication::where('status', '=', 'reviewed');
+    
+        // Paginate results
+        $total = $query->count(); // Get total count before pagination
+        $response = $query->skip($offset)->take($limit)->get();
+    
+        // Prepare data with account details
+        $paginatedData = [];
+        foreach ($response as $item) {
+            $accountDetail = AccountDetails::find($item->account_details_id);
+            if ($accountDetail) {
+                $paginatedData[] = [
+                    // 'list' => $item,
+                    'details' => $accountDetail,
+                ];
+            }
+        }
+        
+        // Response with paginated data
+        $this->response['data'] = [
+            'items' => $paginatedData,
+            'total' => $total,
+        ];
+        $this->response['status'] = 200;
+    
+        return $this->getResponse();
+    }
     public function retrieveEndorsedTableAndDetail(Request $request)    {
         // where status = endorsed
         $data = $request->all();
